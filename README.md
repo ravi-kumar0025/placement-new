@@ -10,6 +10,7 @@
 ![Express](https://img.shields.io/badge/Express-5-000?logo=express&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)
 ![Render](https://img.shields.io/badge/Deployed_on-Render-46E3B7?logo=render&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
 </div>
 
@@ -186,7 +187,78 @@ The application is deployed on **[Render](https://render.com)** as two separate 
    ```
    The Vite dev server proxies `/api` requests to `http://localhost:5000` automatically.
 
+## Running with Docker
+
+The project is fully Dockerized. You can run the entire stack with a single command instead of managing two separate terminals.
+
+### Prerequisites
+- **Docker Desktop** installed and running ([Download](https://www.docker.com/products/docker-desktop/))
+- A valid `backend/.env` file with all environment variables filled in
+
+### Docker Project Structure
+
+```
+IT_workshop/
+├── docker-compose.yml          # Orchestrates backend + frontend containers
+├── backend/
+│   ├── Dockerfile              # node:22-alpine + nodemon (dev server)
+│   └── .dockerignore
+└── frontend/
+    ├── Dockerfile              # Multi-stage: node:22-alpine (build) → nginx:alpine (serve)
+    ├── nginx.conf              # Proxies /api requests to backend container
+    └── .dockerignore
+```
+
+### How it works
+
+```
+Browser → http://localhost
+              │
+          Nginx (port 80)
+              │
+    ┌─────────┴──────────┐
+    │ /api/*             │ everything else
+    ▼                    ▼
+Backend container    React static files
+(port 5000)          (dist/ folder)
+```
+
+Nginx serves the built React app and proxies all `/api` requests to the backend container. This avoids CORS issues since the forwarding is server-to-server.
+
+### Commands
+
+```bash
+# First time / after code changes — build images and start containers
+docker compose up --build
+
+# Start in background (detached mode)
+docker compose up -d
+
+# Start without rebuilding (faster, use when code hasn't changed)
+docker compose up
+
+# Stop and remove containers
+docker compose down
+
+# View logs of a specific container
+docker logs backend
+docker logs frontend
+
+# Check running containers
+docker ps
+```
+
+### Verify it's running
+
+| URL | Expected |
+|-----|----------|
+| `http://localhost` | React login page |
+| `http://localhost:5000/health` | `{"status":"OK","message":"API is running"}` |
+
+> **Note:** The first build takes 2–5 minutes as Docker downloads base images (`node:22-alpine`, `nginx:alpine`). Subsequent builds are significantly faster due to layer caching.
+
 ### Environment Variables
+
 
 | Variable | Location | Purpose |
 |----------|----------|---------|

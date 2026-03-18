@@ -2,6 +2,10 @@ const nodemailer = require('nodemailer');
 
 const sendOTPEmail = async (to, otp) => {
     try {
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            throw new Error('EMAIL_USER or EMAIL_PASS environment variables are not set. Please configure them in your Render dashboard.');
+        }
+
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {

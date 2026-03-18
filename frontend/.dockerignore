@@ -1,0 +1,8 @@
+node_modules
+npm-debug.log
+.env*
+.git
+*.md
+dist 
+.gitignore
+# we ignored the dist as docker will build it fresh with npm run build inside the container

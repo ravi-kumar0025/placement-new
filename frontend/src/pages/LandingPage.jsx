@@ -5,6 +5,7 @@ import HomePageCharts from '../components/HomePageCharts';
 import logo from '../assets/logo.png';
 import DevelopersRibbon from '../components/DevelopersRibbon';
 import ThemeToggle from '../components/ThemeToggle';
+import HeroEcosystem from '../components/HeroEcosystem';
 import { useAuth } from '../context/AuthContext';
 
 export default function LandingPage() {
@@ -111,50 +112,7 @@ export default function LandingPage() {
             </nav>
 
             {/* Hero Section - Light Mode Editorial */}
-            <div className="relative pt-32 pb-32 flex content-center items-center justify-center min-h-[85vh] bg-[#F9FAFB] dark:bg-slate-900">
-                <div className="absolute top-0 w-full h-full overflow-hidden pointer-events-none">
-                    <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-100 rounded-full blur-[100px] opacity-60 dark:bg-blue-900/50"></div>
-                    <div className="absolute top-40 -left-20 w-72 h-72 bg-emerald-100 rounded-full blur-[80px] opacity-50 dark:bg-cyan-900/40"></div>
-                </div>
-
-                <div className="container relative mx-auto px-4 animate-[fade-in-up_1s_ease-out] z-10">
-                    <div className="items-center flex flex-wrap">
-                        <div className="w-full lg:w-8/12 mx-auto text-center">
-                            <div className="inline-block px-4 py-1.5 rounded-full border border-gray-200 bg-white shadow-sm text-gray-500 font-bold tracking-widest uppercase text-xs mb-8 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
-                                Excellence in Engineering
-                            </div>
-                            <h1 className="text-gray-900 font-black text-5xl md:text-7xl leading-[1.1] mb-6 tracking-tight dark:text-slate-100">
-                                Where Ambition <br className="hidden md:block" />
-                                <span className="text-blue-600 relative inline-block">
-                                    Meets Opportunity
-                                </span>
-                            </h1>
-                            <p className="mt-6 text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed font-light dark:text-slate-300">
-                                Empowering the brightest minds at the Indian Institute of Technology Patna
-                                to connect with global industry leaders and shape the future of technology.
-                            </p>
-                            <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
-                                {user ? (
-                                    <Link to={`/dashboard/${user.role}`} className="bg-blue-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-blue-700 hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group">
-                                        Go to Dashboard
-                                        <ExternalLink size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                    </Link>
-                                ) : (
-                                    <>
-                                        <Link to="/login" className="bg-blue-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-blue-700 hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group">
-                                            Recruit at IITP
-                                            <ExternalLink size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                        </Link>
-                                        <Link to="/login" className="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-300 text-center dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 dark:hover:bg-slate-700">
-                                            Student Login
-                                        </Link>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <HeroEcosystem user={user} />
 
             {/* MESSAGE FROM THE TPC SECTION */}
             <section className="w-screen bg-blue-50/50 py-32 border-y border-blue-100/50 relative left-1/2 right-1/2 -mx-[50vw] dark:bg-slate-900 dark:border-slate-800">
