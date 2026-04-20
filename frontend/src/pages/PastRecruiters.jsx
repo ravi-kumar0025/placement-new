@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Plus, Edit2, Trash2, Menu, X, Home, Briefcase, Code, BarChart2, Phone, LayoutDashboard, LogOut, Settings } from 'lucide-react';
@@ -6,8 +6,7 @@ import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from '../components/ThemeToggle';
 import logo from '../assets/logo.png';
-
-
+import { forceSimulation, forceX, forceY, forceCollide, forceManyBody } from 'd3-force';
 
 // Framer Motion Variants
 const containerVariants = {
@@ -93,6 +92,226 @@ const optimizeLogoFile = (file) => new Promise((resolve, reject) => {
 
     img.src = objectUrl;
 });
+
+const LogoImage = ({ name, explicitUrl }) => {
+    const [hasError, setHasError] = useState(false);
+    
+    const domainMap = {
+        'adobe': 'adobe.com',
+        'airbnb': 'airbnb.com',
+        'amazon': 'amazon.com',
+        'amazon pakistan': 'amazon.com',
+        'american express': 'americanexpress.com',
+        'atlassian': 'atlassian.com',
+        'barclays': 'barclays.co.uk',
+        'booking.com': 'booking.com',
+        'broadcom': 'broadcom.com',
+        'cisco': 'cisco.com',
+        'cred': 'cred.club',
+        'de shaw': 'deshaw.com',
+        'expedia': 'expediagroup.com',
+        'flipkart': 'flipkart.com',
+        'goldman sachs': 'goldmansachs.com',
+        'google': 'google.com',
+        'ibm': 'ibm.com',
+        'intel': 'intel.com',
+        'intuit': 'intuit.com',
+        'jpmorgan': 'jpmorganchase.com',
+        'jpmorgan chase': 'jpmorganchase.com',
+        'linkedin': 'linkedin.com',
+        'mathworks': 'mathworks.com',
+        'media.net': 'media.net',
+        'microsoft': 'microsoft.com',
+        'morgan stanley': 'morganstanley.com',
+        'netflix': 'netflix.com',
+        'nvidia': 'nvidia.com',
+        'optum': 'optum.com',
+        'paytm': 'paytm.com',
+        'phonepe': 'phonepe.com',
+        'publicis sapient': 'publicissapient.com',
+        'qualcomm': 'qualcomm.com',
+        'rakuten': 'rakuten.com',
+        'samsung': 'samsung.com',
+        'sprinklr': 'sprinklr.com',
+        'tcs': 'tcs.com',
+        'texas instruments': 'ti.com',
+        'uber': 'uber.com',
+        'walmart': 'walmart.com',
+        'wipro': 'wipro.com',
+        'yahoo': 'yahoo.com',
+        'zomato': 'zomato.com'
+    };
+
+    const getGuessedUrl = (companyName) => {
+        const lowerName = (companyName || '').toLowerCase().trim();
+        if (domainMap[lowerName]) {
+            return `https://logo.clearbit.com/${domainMap[lowerName]}?size=256`;
+        }
+        return `https://logo.clearbit.com/${lowerName.replace(/[^a-z0-9]/g, '')}.com?size=256`;
+    };
+
+    const srcUrl = explicitUrl || getGuessedUrl(name);
+
+    if (hasError) {
+        return (
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center pointer-events-none">
+                <span className="text-white text-2xl font-bold font-serif shadow-sm">{(name || '?').charAt(0).toUpperCase()}</span>
+            </div>
+        );
+    }
+
+    return (
+        <img 
+            src={srcUrl} 
+            alt={name} 
+            onError={() => setHasError(true)}
+            className="max-w-full max-h-full object-contain pointer-events-none drop-shadow-sm" 
+        />
+    );
+};
+
+const BubbleCloud = ({ recruiters, isAdmin, isEditMode, handleEdit, handleDelete }) => {
+    const containerRef = useRef(null);
+    const nodesRef = useRef([]);
+    const simulationRef = useRef(null);
+    const bubbleRefs = useRef({});
+
+    useEffect(() => {
+        if (!containerRef.current || recruiters.length === 0) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const maxR = window.innerWidth < 768 ? 45 : 55;
+        const PADDING = 8;
+
+        const currentNodes = nodesRef.current;
+        const validIds = new Set(recruiters.map(r => r._id));
+        
+        const newNodes = recruiters.map(rec => {
+            const existing = currentNodes.find(n => n.id === rec._id);
+            if (existing) return existing;
+            return {
+                ...rec,
+                id: rec._id,
+                x: centerX + (Math.random() - 0.5) * 100,
+                y: centerY + (Math.random() - 0.5) * 100,
+                vx: 0,
+                vy: 0,
+                radius: maxR
+            };
+        });
+        
+        nodesRef.current = newNodes.filter(n => validIds.has(n.id));
+
+        if (simulationRef.current) {
+            simulationRef.current.stop();
+        }
+
+        const sim = forceSimulation(nodesRef.current)
+            .force("x", forceX(centerX).strength(0.02))
+            .force("y", forceY(centerY).strength(0.02))
+            .force("collide", forceCollide(d => d.radius + PADDING).iterations(3))
+            .force("charge", forceManyBody().strength(-15))
+            .alphaDecay(0.02)
+            .velocityDecay(0.3)
+            .on("tick", () => {
+                if (!containerRef.current) return;
+                const bounds = containerRef.current.getBoundingClientRect();
+                
+                nodesRef.current.forEach(node => {
+                    const r = node.radius;
+                    if (node.x - r < 0) { node.x = r; node.vx = Math.abs(node.vx) * 0.5; }
+                    if (node.x + r > bounds.width) { node.x = bounds.width - r; node.vx = -Math.abs(node.vx) * 0.5; }
+                    if (node.y - r < 0) { node.y = r; node.vy = Math.abs(node.vy) * 0.5; }
+                    if (node.y + r > bounds.height) { node.y = bounds.height - r; node.vy = -Math.abs(node.vy) * 0.5; }
+                    
+                    const el = bubbleRefs.current[node.id];
+                    if (el) el.style.transform = `translate3d(${node.x - r}px, ${node.y - r}px, 0)`;
+                });
+            });
+
+        simulationRef.current = sim;
+
+        const steadyMove = setInterval(() => {
+            if (sim.alpha() < 0.05) sim.alpha(0.05).restart();
+        }, 1000);
+
+        return () => {
+            clearInterval(steadyMove);
+            sim.stop();
+        };
+    }, [recruiters]);
+
+    const handleMouseMove = (e) => {
+        if (!containerRef.current || !simulationRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        
+        // Handle both mouse and touch events
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        const mx = clientX - rect.left;
+        const my = clientY - rect.top;
+        
+        nodesRef.current.forEach(node => {
+            const dx = node.x - mx;
+            const dy = node.y - my;
+            const distSq = dx*dx + dy*dy;
+            const minDist = window.innerWidth < 768 ? 100 : 160; 
+            
+            if (distSq < minDist*minDist && distSq > 0) {
+                const dist = Math.sqrt(distSq);
+                const force = (minDist - dist) / minDist;
+                node.vx += (dx / dist) * force * 5;
+                node.vy += (dy / dist) * force * 5;
+            }
+        });
+        
+        if (simulationRef.current.alpha() < 0.2) {
+            simulationRef.current.alpha(0.2).restart();
+        }
+    };
+
+    return (
+        <MotionDiv 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            ref={containerRef}
+            onMouseMove={handleMouseMove}
+            onTouchMove={handleMouseMove}
+            className="relative w-full h-[550px] md:h-[650px] xl:h-[750px] overflow-hidden rounded-[2.5rem] bg-white/40 dark:bg-slate-900/40 border border-white/50 dark:border-slate-700/50 backdrop-blur-sm shadow-[inset_0_2px_20px_rgba(0,0,0,0.02)]"
+        >
+            {nodesRef.current.map((rec) => (
+                <div
+                    key={rec.id}
+                    ref={el => bubbleRefs.current[rec.id] = el}
+                    className="absolute top-0 left-0 rounded-full bg-white dark:bg-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.08),0_2px_8px_rgba(59,130,246,0.12)] flex flex-col items-center justify-center border border-gray-100/80 dark:border-slate-700/80 group transition-all duration-[400ms] ease-out z-10 hover:z-50 hover:scale-110 hover:shadow-[0_12px_45px_rgba(59,130,246,0.3)] cursor-pointer"
+                    style={{ width: rec.radius * 2, height: rec.radius * 2 }}
+                >
+                    {isAdmin && isEditMode && (
+                        <div className="absolute -top-1 -right-1 flex gap-1 z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={(e) => { e.stopPropagation(); handleEdit(rec); }} className="p-2 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 shadow-sm border border-blue-100"><Edit2 size={12} /></button>
+                            <button onClick={(e) => { e.stopPropagation(); handleDelete(rec); }} className="p-2 bg-red-50 text-red-600 rounded-full hover:bg-red-100 shadow-sm border border-red-100"><Trash2 size={12} /></button>
+                        </div>
+                    )}
+                    
+                    <div className="w-[60%] h-[60%] flex items-center justify-center opacity-90 group-hover:opacity-100 transition-opacity relative">
+                        <LogoImage name={rec.name} explicitUrl={rec.logoUrl} />
+                    </div>
+
+                    {/* Fun Tooltip on hover */}
+                    <div className="absolute top-[108%] bg-zinc-900/95 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs md:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl flex flex-col items-center border border-white/10 translate-y-2 group-hover:translate-y-0 duration-300">
+                        <span className="font-semibold">{rec.name}</span>
+                        <span className="text-[10px] md:text-xs text-blue-300 font-medium tracking-wide mt-0.5">{rec.industry}</span>
+                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-900/95 rotate-45 border-tl border-top border-left border-white/10"></div>
+                    </div>
+                </div>
+            ))}
+        </MotionDiv>
+    );
+};
 
 export default function PastRecruiters() {
     const { user, token, logout } = useAuth();
@@ -458,76 +677,21 @@ export default function PastRecruiters() {
                     />
                 </MotionDiv>
 
-                {/* Grid of Recruiters */}
-                <MotionDiv
-                    key={searchTerm} // Triggers stagger animation again when search changes
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="show"
-                    className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 md:gap-8"
-                >
-                    {filteredRecruiters.map((recruiter) => (
-                        <MotionDiv
-                            key={recruiter._id || recruiter.name}
-                            variants={itemVariants}
-                            className="relative rounded-[2rem] bg-[#F3F4F6] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 border-t-[4px] border-t-sky-500 dark:border-t-cyan-400 px-5 py-4 overflow-hidden transition-all duration-300 ease-out transform-gpu will-change-transform hover:-translate-y-1 shadow-[0_16px_32px_-22px_rgba(15,23,42,0.38)] hover:shadow-[0_20px_38px_-22px_rgba(15,23,42,0.44)] min-h-[150px]"
-                        >
-                            {isAdmin && isEditMode && (
-                                <div className="absolute top-3 right-3 flex gap-2 z-30">
-                                    <button
-                                        onClick={(e) => { e.preventDefault(); handleEdit(recruiter); }}
-                                        className="p-1.5 bg-white/95 text-gray-600 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition-colors border border-gray-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:text-blue-400 dark:hover:bg-slate-700"
-                                        title="Edit Recruiter"
-                                    >
-                                        <Edit2 size={16} />
-                                    </button>
-                                    <button
-                                        onClick={(e) => { e.preventDefault(); handleDelete(recruiters.findIndex(r => r._id === recruiter._id)); }}
-                                        className="p-1.5 bg-white/95 text-gray-600 rounded-lg hover:text-red-600 hover:bg-red-50 transition-colors border border-gray-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:text-red-400 dark:hover:bg-slate-700"
-                                        title="Delete Recruiter"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            )}
-                            <div className="relative z-10 h-full w-full flex items-center gap-3 md:gap-4">
-                                <div className="shrink-0 w-20 h-16 md:w-24 md:h-20 flex items-center justify-center">
-                                    {recruiter.logoUrl ? (
-                                        <img
-                                            src={recruiter.logoUrl}
-                                            alt={`${recruiter.name} logo`}
-                                            className="max-w-full max-h-full object-contain"
-                                        />
-                                    ) : (
-                                        <span className="text-gray-500 dark:text-slate-400 text-3xl font-semibold">
-                                            {(recruiter.name || '?').charAt(0).toUpperCase()}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="flex-1 min-w-0 text-center">
-                                    <h3
-                                        className="text-3xl md:text-[2.05rem] font-semibold text-slate-700 dark:text-slate-300 tracking-tight leading-tight"
-                                        style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-                                    >
-                                        {recruiter.name}
-                                    </h3>
-                                    <p
-                                        className="mt-1 text-2xl md:text-[1.85rem] text-blue-600 dark:text-blue-500 font-medium leading-tight"
-                                        style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-                                    >
-                                        {recruiter.industry}
-                                    </p>
-                                </div>
-                            </div>
-                        </MotionDiv>
-                    ))}
-
-                    {filteredRecruiters.length === 0 && (
-                        <div className="col-span-full py-12 text-center text-gray-500 dark:text-slate-400">
-                            No matching recruiters found.
-                        </div>
-                    )}
-                </MotionDiv>
+                {/* Bubble Cloud of Recruiters */}
+                {filteredRecruiters.length > 0 ? (
+                    <BubbleCloud 
+                        recruiters={filteredRecruiters} 
+                        isAdmin={isAdmin} 
+                        isEditMode={isEditMode} 
+                        handleEdit={handleEdit} 
+                        handleDelete={(rec) => handleDelete(recruiters.findIndex(r => r._id === rec._id))} 
+                    />
+                ) : (
+                    <div className="py-16 text-center">
+                        <div className="text-gray-400 dark:text-slate-500 text-lg font-medium">No matching recruiters found.</div>
+                        <p className="text-gray-400 dark:text-slate-600 text-sm mt-1">Try adjusting your search terms</p>
+                    </div>
+                )}
             </div>
 
             {/* Admin Add/Edit Modal */}
