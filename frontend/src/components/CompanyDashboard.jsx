@@ -78,8 +78,12 @@ function StudentProfile({ student, onBack }) {
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100 dark:border-slate-700 overflow-hidden">
                 <div className="px-8 pb-8 pt-8">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
-                        <div className="w-24 h-24 rounded-full bg-white dark:bg-slate-900 border-4 border-white dark:border-slate-900 shadow-lg flex items-center justify-center text-blue-600 dark:text-blue-300 shrink-0">
-                            <User size={44} strokeWidth={1.5} />
+                        <div className="w-24 h-24 rounded-full bg-white dark:bg-slate-900 border-4 border-white dark:border-slate-900 shadow-lg flex items-center justify-center overflow-hidden text-blue-600 dark:text-blue-300 shrink-0">
+                            {student.profilePicture ? (
+                                <img src={student.profilePicture} alt={`${student.fullName || 'Student'} Profile`} className="w-full h-full object-cover" />
+                            ) : (
+                                <User size={44} strokeWidth={1.5} />
+                            )}
                         </div>
                         <div className="pb-1">
                             <h2 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 leading-tight">

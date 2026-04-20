@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { ShieldAlert, Save, Loader2, UploadCloud } from 'lucide-react';
+import { ShieldAlert, Save, Loader2, UploadCloud, UserCircle } from 'lucide-react';
 import { API_BASE_URL } from '../api';
 
 export default function EditProfile() {
@@ -14,6 +14,7 @@ export default function EditProfile() {
     // Form states
     const [formData, setFormData] = useState({});
     const [resumeFile, setResumeFile] = useState(null);
+    const [profilePicFile, setProfilePicFile] = useState(null);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -64,6 +65,12 @@ export default function EditProfile() {
         }
     };
 
+    const handleProfilePicChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setProfilePicFile(e.target.files[0]);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
@@ -77,27 +84,28 @@ export default function EditProfile() {
 
             if (user.role === 'student') {
                 endpoint = `${API_BASE_URL}/api/student/profile`;
-                // Use FormData due to file upload possibility
                 const fd = new FormData();
                 if (formData.phoneNumber) fd.append('phoneNumber', formData.phoneNumber);
                 if (formData.currentYearOfStudy) fd.append('currentYearOfStudy', formData.currentYearOfStudy);
                 if (resumeFile) fd.append('resume', resumeFile);
+                if (profilePicFile) fd.append('profilePicture', profilePicFile);
                 bodyData = fd;
             } else if (user.role === 'company') {
                 endpoint = `${API_BASE_URL}/api/company/profile`;
-                headers['Content-Type'] = 'application/json';
-                bodyData = JSON.stringify({
-                    companyWebsite: formData.companyWebsite,
-                    HRContactName: formData.HRContactName,
-                    HRContactEmail: formData.HRContactEmail,
-                    contactNumber: formData.contactNumber,
-                });
+                const fd = new FormData();
+                if (formData.companyWebsite) fd.append('companyWebsite', formData.companyWebsite);
+                if (formData.HRContactName) fd.append('HRContactName', formData.HRContactName);
+                if (formData.HRContactEmail) fd.append('HRContactEmail', formData.HRContactEmail);
+                if (formData.contactNumber) fd.append('contactNumber', formData.contactNumber);
+                if (profilePicFile) fd.append('profilePicture', profilePicFile);
+                // No 'Content-Type' header needed for FormData; the browser sets it automatically
+                delete headers['Content-Type']; 
+                bodyData = fd;
             } else if (user.role === 'admin') {
-                // Admins don't have personal profile updates in this spec, other than assigning roles which is a separate page.
-                // We'll just show read-only data for Admin profile edit.
-                setError("Admins cannot edit their own profile details through this page.");
-                setSaving(false);
-                return;
+                endpoint = `${API_BASE_URL}/api/admin/profile`;
+                const fd = new FormData();
+                if (profilePicFile) fd.append('profilePicture', profilePicFile);
+                bodyData = fd;
             }
 
             const res = await fetch(endpoint, {
@@ -112,6 +120,7 @@ export default function EditProfile() {
                 setMessage(data.message || 'Profile updated successfully.');
                 if (data.student) setProfile(data.student);
                 if (data.company) setProfile(data.company);
+                if (data.admin) setProfile(data.admin);
             } else {
                 setError(data.message || 'Error updating profile.');
             }
@@ -142,6 +151,21 @@ export default function EditProfile() {
             {error && <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900/60">{error}</div>}
 
             <form onSubmit={handleSubmit} className="space-y-6">
+                
+                {/* ---------- PROFILE PICTURE UPLOAD ---------- */}
+                <div className="flex flex-col items-center mb-8">
+                    <div className="w-24 h-24 mb-3 rounded-full bg-slate-50 overflow-hidden border-2 border-slate-100 flex items-center justify-center dark:bg-slate-800 dark:border-slate-700">
+                        {profile.profilePicture ? (
+                            <img src={profile.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                            <UserCircle className="w-full h-full text-slate-300 dark:text-slate-600" />
+                        )}
+                    </div>
+                    <label className={`cursor-pointer text-sm font-semibold transition-colors ${!isVerified && user.role !== 'admin' ? 'text-slate-400 pointer-events-none' : 'text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300'}`}>
+                        <span>{profilePicFile ? profilePicFile.name : 'Change Profile Picture'}</span>
+                        <input type="file" className="sr-only" onChange={handleProfilePicChange} accept="image/*" disabled={!isVerified && user.role !== 'admin'} />
+                    </label>
+                </div>
 
                 {/* ---------- STUDENT FIELDS ---------- */}
                 {user.role === 'student' && (
@@ -238,25 +262,23 @@ export default function EditProfile() {
                             <InputField label="Email Address" name="email" value={profile.email} disabled />
                             <InputField label="Admin Role" name="adminType" value={profile.adminType?.replace('_', ' ').toUpperCase()} disabled />
                         </div>
-                        <p className="text-sm text-slate-500 mt-4">Note: Admins cannot currently modify their own profile data. Super Admins can manage roles using the "Assign Powers" menu.</p>
+                        <p className="text-sm text-slate-500 mt-4">Note: Admins cannot currently modify their own profile data (other than their profile picture). Super Admins can manage roles using the "Assign Powers" menu.</p>
                     </>
                 )}
 
-                {user.role !== 'admin' && (
-                    <div className="pt-6 border-t border-slate-100 flex justify-end dark:border-slate-700">
-                        <button
-                            type="submit"
-                            disabled={!isVerified || saving}
-                            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all shadow-sm ${!isVerified || saving
-                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500'
-                                : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md active:scale-[0.98]'
-                                }`}
-                        >
-                            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                            <span>{saving ? 'Saving Changes...' : 'Save Profile Details'}</span>
-                        </button>
-                    </div>
-                )}
+                <div className="pt-6 border-t border-slate-100 flex justify-end dark:border-slate-700">
+                    <button
+                        type="submit"
+                        disabled={(!isVerified && user.role !== 'admin') || saving}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all shadow-sm ${(!isVerified && user.role !== 'admin') || saving
+                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500'
+                            : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md active:scale-[0.98]'
+                            }`}
+                    >
+                        {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                        <span>{saving ? 'Saving Changes...' : 'Save Profile Details'}</span>
+                    </button>
+                </div>
             </form>
         </div>
     );

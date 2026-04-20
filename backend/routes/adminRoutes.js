@@ -25,7 +25,10 @@ router.post('/announcements', checkAdminRole(['super_admin', 'announcement_admin
 router.put('/announcements/:id', checkAdminRole(['super_admin', 'announcement_admin']), adminController.updateAnnouncement);
 router.delete('/announcements/:id', checkAdminRole(['super_admin', 'announcement_admin']), adminController.deleteAnnouncement);
 
+const { upload } = require('../utils/cloudinaryConfig');
+
 // Profile editing for Admins
 router.put('/profile/:adminId/role', checkAdminRole(['super_admin']), adminController.updateAdminRole);
+router.put('/profile', upload.single('profilePicture'), adminController.updateProfile);
 
 module.exports = router;

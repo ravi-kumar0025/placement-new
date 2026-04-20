@@ -340,3 +340,35 @@ exports.updateAdminRole = async (req, res) => {
         res.status(500).json({ message: 'Internal server error.' });
     }
 };
+
+exports.updateProfile = async (req, res) => {
+    try {
+        const adminId = req.user.userId;
+        const updateData = {};
+        
+        if (req.file && req.file.path) {
+            const { uploadOnCloudinary } = require('../utils/cloudinaryConfig');
+            const cloudinaryResponse = await uploadOnCloudinary(req.file.path);
+
+            if (cloudinaryResponse) {
+                updateData.profilePicture = cloudinaryResponse.url;
+            } else {
+                return res.status(500).json({ message: 'Error uploading profile picture to Cloudinary.' });
+            }
+        }
+
+        if (Object.keys(updateData).length > 0) {
+            const updatedAdmin = await Admin.findByIdAndUpdate(
+                adminId,
+                updateData,
+                { returnDocument: 'after' }
+            );
+            return res.status(200).json({ message: 'Profile updated successfully.', admin: updatedAdmin });
+        }
+
+        res.status(200).json({ message: 'No changes provided.', admin: await Admin.findById(adminId) });
+    } catch (err) {
+        console.error('updateProfile Error:', err);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+};

@@ -51,8 +51,12 @@ export default function StudentProfileModal({ student, onClose }) {
                 {/* Avatar */}
                 <div className="px-6 pb-6">
                     <div className="flex items-end gap-4 -mt-10 mb-4">
-                        <div className="w-20 h-20 rounded-full bg-white border-4 border-white shadow-lg flex items-center justify-center text-blue-600 shrink-0">
-                            <User size={36} strokeWidth={1.5} />
+                        <div className="w-20 h-20 rounded-full bg-white border-4 border-white shadow-lg flex items-center justify-center overflow-hidden text-blue-600 shrink-0">
+                            {student.profilePicture ? (
+                                <img src={student.profilePicture} alt={`${student.fullName || 'Student'} Profile`} className="w-full h-full object-cover" />
+                            ) : (
+                                <User size={36} strokeWidth={1.5} />
+                            )}
                         </div>
                         <div className="pb-1">
                             <h2 className="text-xl font-bold text-slate-900 leading-tight">

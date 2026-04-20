@@ -128,6 +128,17 @@ exports.updateProfile = async (req, res) => {
         if (HRContactEmail !== undefined) updateData.HRContactEmail = HRContactEmail;
         if (contactNumber !== undefined) updateData.contactNumber = contactNumber;
 
+        if (req.file && req.file.path) {
+            const { uploadOnCloudinary } = require('../utils/cloudinaryConfig');
+            const cloudinaryResponse = await uploadOnCloudinary(req.file.path);
+
+            if (cloudinaryResponse) {
+                updateData.profilePicture = cloudinaryResponse.url;
+            } else {
+                return res.status(500).json({ message: 'Error uploading profile picture to Cloudinary.' });
+            }
+        }
+
         const updatedCompany = await Company.findByIdAndUpdate(
             companyId,
             updateData,

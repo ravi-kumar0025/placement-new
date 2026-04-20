@@ -12,6 +12,6 @@ router.get('/calendar', verifyToken, requireRole(['student', 'admin']), calendar
     
 
 router.post('/verify', verifyToken, requireRole(['student']), upload.single('idCard'), studentController.submitVerification);
-router.put('/profile', verifyToken, requireRole(['student']), upload.single('resume'), studentController.updateProfile);
+router.put('/profile', verifyToken, requireRole(['student']), upload.fields([{ name: 'resume', maxCount: 1 }, { name: 'profilePicture', maxCount: 1 }]), studentController.updateProfile);
 
 module.exports = router;

@@ -87,8 +87,12 @@ export default function DashboardShell() {
                                 onClick={() => navigate(`/dashboard/${user.role}/profile`)}
                                 title="Edit Profile"
                             >
-                                <div className="w-20 h-20 bg-gradient-to-tr from-blue-100 to-indigo-50 rounded-full flex items-center justify-center shadow-inner border-4 border-white ring-1 ring-slate-200 dark:from-slate-800 dark:to-slate-700 dark:ring-slate-600 dark:border-slate-800">
-                                    <UserCircle size={40} strokeWidth={1} className="text-blue-400" />
+                                <div className="w-20 h-20 bg-gradient-to-tr from-blue-100 to-indigo-50 rounded-full flex items-center justify-center shadow-inner border-4 border-white ring-1 ring-slate-200 overflow-hidden dark:from-slate-800 dark:to-slate-700 dark:ring-slate-600 dark:border-slate-800">
+                                    {user.profilePicture ? (
+                                        <img src={user.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <UserCircle size={40} strokeWidth={1} className="text-blue-400" />
+                                    )}
                                 </div>
                                 <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
                                     <span className="text-white text-xs font-medium">Edit</span>

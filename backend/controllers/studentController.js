@@ -193,9 +193,9 @@ exports.updateProfile = async (req, res) => {
         if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
 
         // Handle Resume Upload
-        if (req.file && req.file.path) {
+        if (req.files && req.files.resume && req.files.resume[0]) {
             const { uploadOnCloudinary } = require('../utils/cloudinaryConfig');
-            const cloudinaryResponse = await uploadOnCloudinary(req.file.path);
+            const cloudinaryResponse = await uploadOnCloudinary(req.files.resume[0].path);
 
             if (cloudinaryResponse) {
                 updateData.resumeLink = cloudinaryResponse.url;
@@ -204,6 +204,18 @@ exports.updateProfile = async (req, res) => {
             }
         } else if (req.body.removeResume === 'true') {
             updateData.resumeLink = ''; // Clear the resume link
+        }
+        
+        // Handle Profile Picture Upload
+        if (req.files && req.files.profilePicture && req.files.profilePicture[0]) {
+            const { uploadOnCloudinary } = require('../utils/cloudinaryConfig');
+            const cloudinaryResponse = await uploadOnCloudinary(req.files.profilePicture[0].path);
+
+            if (cloudinaryResponse) {
+                updateData.profilePicture = cloudinaryResponse.url;
+            } else {
+                return res.status(500).json({ message: 'Error uploading profile picture to Cloudinary.' });
+            }
         }
 
         const updatedStudent = await Student.findByIdAndUpdate(
