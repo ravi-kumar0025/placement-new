@@ -11,7 +11,11 @@ exports.getUnifiedCalendar = async (req, res) => {
             return res.status(404).json({ message: 'Student not found.' });
         }
 
-        const eventQuery = { $and: [] };
+        const eventQuery = { 
+            $and: [
+                { $or: [{ status: 'published' }, { status: { $exists: false } }] }
+            ] 
+        };
         const announcementQuery = { $and: [] };
 
         const targetBranchesRegex = [/^all$/i];

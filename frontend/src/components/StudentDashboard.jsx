@@ -3,7 +3,7 @@ import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
 
-// Fix: Import named functions directly from 'date-fns'
+
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import enUS from 'date-fns/locale/en-US';
 
@@ -68,10 +68,15 @@ export default function StudentDashboard() {
             });
 
             const formattedEvents = data.events.map(e => ({
+                id: e._id,
                 title: e.title,
-                start: new Date(e.date),
-                end: new Date(new Date(e.date).getTime() + 60 * 60 * 1000),
+                start: new Date(e.startDate || e.date),
+                end: new Date(e.endDate || new Date(new Date(e.startDate || e.date).getTime() + 60 * 60 * 1000)),
                 type: e.type,
+                description: e.description,
+                targetAudience: e.targetAudience,
+                targetBranches: e.targetBranches || [],
+                createdBy: e.createdBy,
             }));
             setEvents(formattedEvents);
         } catch (err) {
@@ -95,7 +100,7 @@ export default function StudentDashboard() {
     const eventStyleGetter = (event) => {
         const isViewed = viewedIds.has(event.id || event.title);
 
-        // Announcements → solid amber box + class so CSS can also target it
+
         if (event.type === 'announcement') {
             const bg = isViewed ? '#fbbf24' : '#f59e0b';
             return {
@@ -114,7 +119,7 @@ export default function StudentDashboard() {
             };
         }
 
-        // All other types → transparent background, CSS dot via ::before
+
         let color = isViewed ? '#93c5fd' : '#3b82f6';
         if (event.type === 'internship') color = isViewed ? '#6ee7b7' : '#10b981';
         if (event.type === 'placement_drive') color = isViewed ? '#c4b5fd' : '#8b5cf6';
@@ -131,26 +136,27 @@ export default function StudentDashboard() {
         };
     };
 
-    // Dashboard calendar shows all announcements
-    // If an announcement was edited, use editedAt so it floats to today on the calendar
-    const calendarEvents = announcements.map(a => {
-        const eventDate = new Date(a.editedAt || a.createdAt);
-        return {
-            id: a._id,
-            title: a.isEdited ? `✎ ${a.title}` : a.title,
-            start: eventDate,
-            end: new Date(eventDate.getTime() + 60 * 60 * 1000),
-            type: a.type || 'announcement',
-            description: a.content || a.description,
-            targetAudience: a.targetAudience,
-            targetBranches: a.targetBranches || [],
-            isEdited: a.isEdited,
-            createdBy: a.createdBy,
-        };
-    });
+
+    const calendarEvents = [
+        ...announcements.map(a => {
+            const eventDate = new Date(a.editedAt || a.createdAt);
+            return {
+                id: a._id,
+                title: a.isEdited ? `✎ ${a.title}` : a.title,
+                start: eventDate,
+                end: new Date(eventDate.getTime() + 60 * 60 * 1000),
+                type: a.type || 'announcement',
+                description: a.content || a.description,
+                targetAudience: a.targetAudience,
+                targetBranches: a.targetBranches || [],
+                isEdited: a.isEdited,
+                createdBy: a.createdBy,
+            };
+        })
+    ];
 
     const handleSelectEvent = (event) => {
-        // Derive index from announcements array — avoids BigCalendar passing SyntheticEvent as 2nd arg
+
         const idx = announcements.findIndex(a => a._id === event.id);
         setSelectedEvent(event);
         setSelectedIndex(idx >= 0 ? idx : null);

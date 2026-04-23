@@ -23,6 +23,8 @@ import CompanyVerificationForm from './components/CompanyVerificationForm';
 import StudentAnnouncements from './components/StudentAnnouncements';
 import EditProfile from './pages/EditProfile';
 import MyResumes from './pages/MyResumes';
+import CompanyEvents from './components/CompanyEvents';
+import AdminEventWorkflows from './components/AdminEventWorkflows';
 import useCursorGlow from './hooks/useCursorGlow';
 
 function App() {
@@ -54,6 +56,7 @@ function App() {
             <Route path="company" element={<CompanyDashboard />} />
             <Route path="company/verify" element={<CompanyVerificationForm />} />
             <Route path="company/database" element={<CompanyDashboard />} />
+            <Route path="company/events" element={<CompanyEvents />} />
             <Route path="company/profile" element={<EditProfile />} />
             <Route path="company/*" element={<Navigate to="/dashboard/company" replace />} />
 
@@ -62,6 +65,7 @@ function App() {
               <Route path="companies" element={<CompanyVerificationQueue />} />
               <Route path="students/verify" element={<StudentVerificationQueue />} />
               <Route path="calendar" element={<StudentCalendarUpdate />} />
+              <Route path="event-workflows" element={<AdminEventWorkflows />} />
               <Route path="assign-powers" element={<AdminPowerAssignment />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="profile" element={<EditProfile />} />

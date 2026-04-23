@@ -15,7 +15,6 @@ const eventSchema = new mongoose.Schema({
     },
     startDate: {
         type: Date,
-        required: true,
     },
     endDate: {
         type: Date,
@@ -53,16 +52,27 @@ const eventSchema = new mongoose.Schema({
     companyRef: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
+    },
+    status: {
+        type: String,
+        enum: ['pending_announcement_admin', 'pending_admin', 'pending_company_approval', 'published', 'cancelled'],
+        default: 'published'
+    },
+    companyFeedback: {
+        type: String,
+    },
+    adminNotes: {
+        type: String,
     }
 }, { timestamps: true });
 
 // If endDate is not set, default to startDate
 eventSchema.pre('save', function (next) {
-    if (!this.endDate) {
+    if (!this.endDate && this.startDate) {
         this.endDate = this.startDate;
     }
     // Keep legacy date field in sync
-    if (!this.date) {
+    if (!this.date && this.startDate) {
         this.date = this.startDate;
     }
     if (typeof next === 'function') {

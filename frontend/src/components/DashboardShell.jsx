@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Navigate, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { UserCircle, LogOut, Bell, Building, CheckCircle, Database, Calendar as CalendarIcon, FileText, Settings, ShieldAlert, LayoutDashboard, House } from 'lucide-react';
+import { UserCircle, LogOut, Bell, Building, CheckCircle, Database, Calendar as CalendarIcon, FileText, Settings, ShieldAlert, LayoutDashboard, House, ClipboardList } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import logo from '../assets/logo.png';
 
@@ -146,6 +146,7 @@ export default function DashboardShell() {
                                     path="/dashboard/company/database"
                                     disabled={user.verificationStatus === 'pending' || user.verificationStatus === 'unsubmitted'}
                                 />
+                                <SidebarItem icon={CalendarIcon} label="Manage Events" path="/dashboard/company/events" />
                                 <SidebarItem icon={CheckCircle} label="Verification Status" path="/dashboard/company/verify" />
                                 <SidebarItem icon={Building} label="Company Profile" path="/dashboard/company/profile" />
                             </>
@@ -165,6 +166,7 @@ export default function DashboardShell() {
                                 {(user.adminType === 'super_admin' || user.adminType === 'student_admin') && (
                                     <SidebarItem icon={CalendarIcon} label="Manage Calendar" path="/dashboard/admin/calendar" />
                                 )}
+                                <SidebarItem icon={ClipboardList} label="Event Workflows" path="/dashboard/admin/event-workflows" />
                                 <SidebarItem icon={Settings} label="Assign Powers" path="/dashboard/admin/assign-powers" />
                             </>
                         )}

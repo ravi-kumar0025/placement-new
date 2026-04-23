@@ -13,6 +13,12 @@ router.get('/students/pending', checkAdminRole(['super_admin', 'student_admin'])
 router.put('/students/:studentId/verify', checkAdminRole(['super_admin', 'student_admin']), adminController.verifyStudentData);
 router.post('/assign-power', checkAdminRole(['super_admin', 'announcement_admin', 'student_admin']), adminController.assignAdminPower);
 
+// Event Workflow Routes
+router.get('/events/workflow/pending-announcement', checkAdminRole(['super_admin', 'announcement_admin']), adminController.getPendingAnnouncementEvents);
+router.put('/events/workflow/:id/allot-timing', checkAdminRole(['super_admin', 'announcement_admin']), adminController.allotEventTiming);
+router.get('/events/workflow/pending-admin', checkAdminRole(['super_admin', 'student_admin']), adminController.getPendingAdminEvents);
+router.put('/events/workflow/:id/verify-timing', checkAdminRole(['super_admin', 'student_admin']), adminController.verifyEventTiming);
+
 // Events Routes
 router.get('/events', checkAdminRole(['super_admin', 'student_admin']), adminController.getEvents);
 router.post('/events', checkAdminRole(['super_admin', 'student_admin']), adminController.createEvent);

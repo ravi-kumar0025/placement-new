@@ -340,12 +340,11 @@ exports.updateAdminRole = async (req, res) => {
         res.status(500).json({ message: 'Internal server error.' });
     }
 };
-
 exports.updateProfile = async (req, res) => {
     try {
         const adminId = req.user.userId;
         const updateData = {};
-        
+
         if (req.file && req.file.path) {
             const { uploadOnCloudinary } = require('../utils/cloudinaryConfig');
             const cloudinaryResponse = await uploadOnCloudinary(req.file.path);
@@ -370,5 +369,83 @@ exports.updateProfile = async (req, res) => {
     } catch (err) {
         console.error('updateProfile Error:', err);
         res.status(500).json({ message: 'Internal server error.' });
+    }
+};
+
+// New Event Workflow for Admins
+
+exports.getPendingAnnouncementEvents = async (req, res) => {
+    try {
+        const events = await Event.find({ status: 'pending_announcement_admin' }).populate('companyRef', 'companyName companyEmail');
+        res.status(200).json({ events });
+    } catch (err) {
+        console.error('getPendingAnnouncementEvents Error:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.allotEventTiming = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { startDate, endDate, deadline, adminNotes } = req.body;
+
+        if (!startDate) return res.status(400).json({ message: 'startDate is required' });
+
+        const finalEndDate = endDate || startDate;
+        const finalDeadline = deadline || finalEndDate;
+
+        const event = await Event.findById(id);
+        if (!event) return res.status(404).json({ message: 'Event not found' });
+
+        if (event.status !== 'pending_announcement_admin') {
+            return res.status(400).json({ message: 'Event is not in the correct state' });
+        }
+
+        event.startDate = startDate;
+        event.endDate = finalEndDate;
+        event.deadline = finalDeadline;
+        event.status = 'pending_admin';
+        if (adminNotes) event.adminNotes = adminNotes;
+
+        await event.save();
+        res.status(200).json({ message: 'Timing allotted and passed to main admin', event });
+    } catch (err) {
+        console.error('allotEventTiming Error:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.getPendingAdminEvents = async (req, res) => {
+    try {
+        const events = await Event.find({ status: 'pending_admin' }).populate('companyRef', 'companyName companyEmail');
+        res.status(200).json({ events });
+    } catch (err) {
+        console.error('getPendingAdminEvents Error:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.verifyEventTiming = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { adminNotes } = req.body;
+
+        const event = await Event.findById(id);
+        if (!event) return res.status(404).json({ message: 'Event not found' });
+
+        if (event.status !== 'pending_admin') {
+            return res.status(400).json({ message: 'Event is not in the correct state' });
+        }
+
+        event.status = 'pending_company_approval';
+        if (adminNotes) {
+            event.adminNotes = event.adminNotes ? event.adminNotes + '\n' + adminNotes : adminNotes;
+        }
+
+        await event.save();
+        res.status(200).json({ message: 'Event verified and sent to company for approval', event });
+    } catch (err) {
+        console.error('verifyEventTiming Error:', err);
+        res.status(500).json({ message: 'Internal server error' });
     }
 };

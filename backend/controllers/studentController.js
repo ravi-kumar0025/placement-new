@@ -12,7 +12,11 @@ exports.getEvents = async (req, res) => {
 
         const { type, targetBranch } = req.query;
 
-        const query = { $and: [] };
+        const query = { 
+            $and: [
+                { $or: [{ status: 'published' }, { status: { $exists: false } }] }
+            ] 
+        };
         if (type) query.type = type;
 
         const targetBranchesRegex = [];

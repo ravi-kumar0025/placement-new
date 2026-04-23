@@ -172,3 +172,78 @@ exports.getCompanyEvents = async (req, res) => {
         res.status(500).json({ message: 'Internal server error while fetching events' });
     }
 };
+
+exports.requestEvent = async (req, res) => {
+    const Event = require('../models/Event');
+    try {
+        const { title, description, type, targetPrograms, targetBranches, targetYears, links } = req.body;
+        const companyId = req.user.userId;
+
+        const newEvent = await Event.create({
+            title,
+            description,
+            type,
+            targetPrograms: targetPrograms || [],
+            targetBranches: targetBranches || [],
+            targetYears: targetYears || [],
+            links: links || [],
+            createdBy: companyId,
+            companyRef: companyId,
+            status: 'pending_announcement_admin'
+        });
+
+        // Add to company events
+        const company = await Company.findById(companyId);
+        if (company) {
+            company.events.push(newEvent._id);
+            await company.save();
+        }
+
+        res.status(201).json({ message: 'Event request submitted successfully', event: newEvent });
+    } catch (err) {
+        console.error('requestEvent Error:', err);
+        res.status(500).json({ message: 'Internal server error while requesting event' });
+    }
+};
+
+exports.eventAction = async (req, res) => {
+    const Event = require('../models/Event');
+    try {
+        const { id } = req.params;
+        const { action, companyFeedback } = req.body; // action: 'approve', 'request_change', 'cancel'
+        const companyId = req.user.userId;
+
+        const event = await Event.findById(id);
+        if (!event) return res.status(404).json({ message: 'Event not found' });
+
+        if (event.companyRef.toString() !== companyId) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        if (event.status !== 'pending_company_approval') {
+            return res.status(400).json({ message: 'Event is not pending your approval' });
+        }
+
+        if (action === 'approve') {
+            event.status = 'published';
+            event.companyFeedback = ''; // clear feedback
+        } else if (action === 'request_change') {
+            if (!companyFeedback) {
+                return res.status(400).json({ message: 'Feedback is required when requesting a change' });
+            }
+            event.status = 'pending_announcement_admin';
+            event.companyFeedback = companyFeedback;
+        } else if (action === 'cancel') {
+            event.status = 'cancelled';
+            event.companyFeedback = companyFeedback || 'Cancelled by company';
+        } else {
+            return res.status(400).json({ message: 'Invalid action' });
+        }
+
+        await event.save();
+        res.status(200).json({ message: `Event action '${action}' applied successfully`, event });
+    } catch (err) {
+        console.error('eventAction Error:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
