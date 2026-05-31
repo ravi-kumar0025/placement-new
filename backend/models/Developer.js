@@ -1,24 +1,38 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-const DeveloperSchema = new mongoose.Schema({
+const developerSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
     },
+
     roll: {
-        type: String, 
+        type: String,
         required: true,
     },
+
     image: {
-        type: String, 
+        type: String,
         required: true,
     },
-    githubUrl: { type: String, default: '' },
-    linkedinUrl: { type: String, default: '' },
+
+    githubUrl: {
+        type: String,
+        default: ''
+    },
+
+    linkedinUrl: {
+        type: String,
+        default: ''
+    },
+
     isPublic: {
         type: Boolean,
         default: true,
     },
+
 }, { timestamps: true });
 
-module.exports = mongoose.model('Developer', DeveloperSchema);
+const Developer = mongoose.model('Developer', developerSchema);
+
+export default Developer;

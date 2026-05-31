@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose"
 
 const pastRecruiterSchema = new mongoose.Schema({
     name: {
@@ -17,13 +17,10 @@ const pastRecruiterSchema = new mongoose.Schema({
         trim: true,
         default: ''
     },
-    tier: {
-        type: String,
-        enum: ['Tier 1', 'Tier 2', 'Tier 3'],
-        default: 'Tier 1'
-    }
 }, {
     timestamps: true
 });
 
-module.exports = mongoose.model('PastRecruiter', pastRecruiterSchema);
+const PastRecruiter = mongoose.model('PastRecruiter', pastRecruiterSchema);
+
+export default PastRecruiter

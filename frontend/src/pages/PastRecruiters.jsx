@@ -175,6 +175,13 @@ const BubbleCloud = ({ recruiters, isAdmin, isEditMode, handleEdit, handleDelete
     const nodesRef = useRef([]);
     const simulationRef = useRef(null);
     const bubbleRefs = useRef({});
+    const [viewportWidth, setViewportWidth] = useState(() => (typeof window === 'undefined' ? 1280 : window.innerWidth));
+
+    useEffect(() => {
+        const handleResize = () => setViewportWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         if (!containerRef.current || recruiters.length === 0) return;
@@ -182,7 +189,7 @@ const BubbleCloud = ({ recruiters, isAdmin, isEditMode, handleEdit, handleDelete
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
 
-        const maxR = window.innerWidth < 768 ? 45 : 55;
+        const maxR = viewportWidth < 768 ? 45 : 55;
         const PADDING = 8;
 
         const currentNodes = nodesRef.current;
@@ -258,7 +265,7 @@ const BubbleCloud = ({ recruiters, isAdmin, isEditMode, handleEdit, handleDelete
             const dx = node.x - mx;
             const dy = node.y - my;
             const distSq = dx*dx + dy*dy;
-            const minDist = window.innerWidth < 768 ? 100 : 160; 
+            const minDist = viewportWidth < 768 ? 100 : 160; 
             
             if (distSq < minDist*minDist && distSq > 0) {
                 const dist = Math.sqrt(distSq);
@@ -273,6 +280,12 @@ const BubbleCloud = ({ recruiters, isAdmin, isEditMode, handleEdit, handleDelete
         }
     };
 
+    const bubbleHeight = (() => {
+        if (viewportWidth < 640) return Math.min(1700, Math.max(860, 560 + recruiters.length * 28));
+        if (viewportWidth < 1024) return Math.min(1400, Math.max(780, 520 + recruiters.length * 18));
+        return Math.min(1100, Math.max(700, 500 + recruiters.length * 11));
+    })();
+
     return (
         <MotionDiv 
             initial={{ opacity: 0, scale: 0.95 }}
@@ -281,7 +294,8 @@ const BubbleCloud = ({ recruiters, isAdmin, isEditMode, handleEdit, handleDelete
             ref={containerRef}
             onMouseMove={handleMouseMove}
             onTouchMove={handleMouseMove}
-            className="relative w-full h-[550px] md:h-[650px] xl:h-[750px] overflow-hidden rounded-[2.5rem] bg-white/40 dark:bg-slate-900/40 border border-white/50 dark:border-slate-700/50 backdrop-blur-sm shadow-[inset_0_2px_20px_rgba(0,0,0,0.02)]"
+            className="relative w-full overflow-hidden rounded-[2.5rem] bg-white/40 dark:bg-slate-900/40 border border-white/50 dark:border-slate-700/50 backdrop-blur-sm shadow-[inset_0_2px_20px_rgba(0,0,0,0.02)]"
+            style={{ height: `${bubbleHeight}px` }}
         >
             {nodesRef.current.map((rec) => (
                 <div
@@ -499,14 +513,14 @@ export default function PastRecruiters() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-[#F7F6F2] [background-image:linear-gradient(135deg,rgba(255,255,255,0.72),rgba(245,243,238,0.92)),radial-gradient(rgba(15,23,42,0.05)_0.55px,transparent_0.55px)] [background-size:100%_100%,3px_3px] dark:[background-image:none] flex items-center justify-center dark:bg-slate-950">
+            <div className="min-h-screen bg-transparent flex items-center justify-center">
                 <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#F7F6F2] [background-image:linear-gradient(135deg,rgba(255,255,255,0.72),rgba(245,243,238,0.92)),radial-gradient(rgba(15,23,42,0.05)_0.55px,transparent_0.55px)] [background-size:100%_100%,3px_3px] dark:[background-image:none] font-sans pb-32 overflow-hidden relative dark:bg-slate-950">
+        <div className="min-h-screen bg-transparent font-sans pb-20 md:pb-32 overflow-hidden relative">
             {/* Navbar */}
             <nav className="fixed w-full z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100 transition-all duration-300 dark:bg-slate-950/85 dark:border-slate-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -615,13 +629,13 @@ export default function PastRecruiters() {
                 )}
             </nav>
 
-            <div className="pt-32 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="pt-28 md:pt-32 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header Setup */}
                 <MotionDiv
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
-                    className="text-center mb-20"
+                    className="text-center mb-14 md:mb-20"
                 >
                     <div className="inline-block px-4 py-1.5 rounded-full border border-gray-200 bg-gray-50 text-gray-600 font-bold tracking-widest uppercase text-xs mb-8 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300">
                         Our Partners
@@ -661,7 +675,7 @@ export default function PastRecruiters() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.8 }}
-                    className="max-w-xl mx-auto mb-16 relative"
+                    className="max-w-xl mx-auto mb-10 md:mb-16 relative"
                 >
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -679,12 +693,12 @@ export default function PastRecruiters() {
 
                 {/* Bubble Cloud of Recruiters */}
                 {filteredRecruiters.length > 0 ? (
-                    <BubbleCloud 
-                        recruiters={filteredRecruiters} 
-                        isAdmin={isAdmin} 
-                        isEditMode={isEditMode} 
-                        handleEdit={handleEdit} 
-                        handleDelete={(rec) => handleDelete(recruiters.findIndex(r => r._id === rec._id))} 
+                    <BubbleCloud
+                        recruiters={filteredRecruiters}
+                        isAdmin={isAdmin}
+                        isEditMode={isEditMode}
+                        handleEdit={handleEdit}
+                        handleDelete={(rec) => handleDelete(recruiters.findIndex(r => r._id === rec._id))}
                     />
                 ) : (
                     <div className="py-16 text-center">

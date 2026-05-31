@@ -12,7 +12,7 @@ export default function LandingPage() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { user, token, logout } = useAuth();
     return (
-        <div className="min-h-screen flex flex-col font-sans bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+        <div className="min-h-screen flex flex-col font-sans bg-transparent text-slate-900 dark:bg-transparent dark:text-slate-100">
             {/* Navbar */}
             <nav className="fixed w-full z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100 transition-all duration-300 dark:bg-slate-950/85 dark:border-slate-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

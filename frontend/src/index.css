@@ -11,13 +11,13 @@
 
   :root,
   [data-theme='light'] {
-    --tpc-bg: #f8fafc;
+    --tpc-bg: #fdfbf7;
     --tpc-surface: #ffffff;
-    --tpc-surface-muted: #f1f5f9;
-    --tpc-border: #e2e8f0;
-    --tpc-text: #0f172a;
-    --tpc-text-muted: #64748b;
-    --tpc-accent: #2563eb;
+    --tpc-surface-muted: #f4edd9;
+    --tpc-border: #e6dec3;
+    --tpc-text: #3b3327;
+    --tpc-text-muted: #857a66;
+    --tpc-accent: #d97706;
   }
 
   .dark,
@@ -32,7 +32,25 @@
   }
 
   body {
-    @apply font-sans antialiased bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+    @apply font-sans antialiased text-stone-800 transition-colors duration-300 dark:text-slate-100;
+    background-color: #fdfbf7;
+    background-image:
+      radial-gradient(rgba(80, 90, 100, 0.12) 1px, transparent 1px),
+      linear-gradient(180deg, #f4ecd6 0%, #eaddb6 50%, #fefdfb 50%, #ffffff 100%);
+    background-size: 28px 28px, 100% 100%;
+    background-position: 14px 14px, 0 0;
+    background-attachment: fixed;
+  }
+
+  .dark body,
+  [data-theme='dark'] body {
+    background-color: #090d16;
+    background-image:
+      radial-gradient(circle at 14% 16%, rgba(249, 115, 22, 0.2), transparent 30%),
+      radial-gradient(circle at 86% 10%, rgba(56, 189, 248, 0.2), transparent 36%),
+      linear-gradient(138deg, #090d16 0%, #0d1324 46%, #140f0c 100%),
+      radial-gradient(rgba(148, 163, 184, 0.15) 0.6px, transparent 0.6px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 4px 4px;
   }
 }
 

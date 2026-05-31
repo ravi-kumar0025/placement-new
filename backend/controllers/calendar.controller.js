@@ -1,10 +1,10 @@
-const Event = require('../models/Event');
-const Announcement = require('../models/Announcement');
+import Event from '../models/Event.js';
+import Announcement from '../models/Announcement.js';
+import Student from '../models/Student.js';
 
-exports.getUnifiedCalendar = async (req, res) => {
+const getUnifiedCalendar = async (req, res) => {
     try {
         const studentId = req.user.userId;
-        const Student = require('../models/Student');
         const student = await Student.findById(studentId);
 
         if (!student) {
@@ -110,3 +110,7 @@ exports.getUnifiedCalendar = async (req, res) => {
     }
 };
 
+const calendarController={
+    getUnifiedCalendar
+}
+export default calendarController;

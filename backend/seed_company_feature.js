@@ -1,16 +1,3 @@
-/**
- * Seed script: Company applicants feature test data
- *
- * Creates:
- *   1. A verified company account  (company@testcorp.com / role: company)
- *   2. Two events owned by that company (internship + placement_drive)
- *   3. Five student accounts whose emails are in the events' appliedStudents arrays
- *   4. Updates company.events to reference those event _ids
- *
- * Run once:
- *   cd backend
- *   node seed_company_feature.js
- */
 
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -116,7 +103,7 @@ async function seed() {
 
     // ── Summary ───────────────────────────────────────────────────────────
     console.log('\n──────────────────────────────────────────────────────────');
-    console.log('🎉 Seed complete!  Log in as the company to test:\n');
+    console.log('   Seed complete!  Log in as the company to test:\n');
     console.log(`   Company login  →  ${COMPANY_EMAIL}  (role: company)`);
     console.log('   Then open "Student Database" — select the event in the');
     console.log('   dropdown to see only its applicants.\n');
@@ -130,6 +117,6 @@ async function seed() {
 }
 
 seed().catch(err => {
-    console.error('❌ Seed Error:', err.message);
+    console.error('Seed Error:', err.message);
     process.exit(1);
 });

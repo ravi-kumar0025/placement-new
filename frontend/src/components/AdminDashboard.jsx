@@ -8,7 +8,7 @@ export default function AdminDashboard() {
 
     return (
         <div className="space-y-8 animate-[fade-in-up_0.5s_ease-out]">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100 dark:bg-slate-900/90 dark:border-slate-700/70 dark:shadow-[0_18px_36px_-20px_rgba(2,6,23,0.9)]">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/90 p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100/80 backdrop-blur-sm dark:bg-slate-900/85 dark:border-slate-700/70 dark:shadow-[0_18px_36px_-20px_rgba(2,6,23,0.9)]">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2 dark:text-slate-100">
                         <UserCog className="text-blue-600 dark:text-blue-400" size={28} />

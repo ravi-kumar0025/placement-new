@@ -1,48 +1,55 @@
-const mongoose = require('mongoose');
-const User = require('./User');
+import mongoose from "mongoose";
+import User from "./User.js";
 
 const companySchema = new mongoose.Schema({
     companyName: {
         type: String,
         required: true,
     },
+
     companyEmail: {
         type: String,
         required: true,
         unique: true,
     },
+
     companyWebsite: {
         type: String,
         required: true,
     },
+
     HRContactName: {
         type: String,
         required: true,
     },
+
     HRContactEmail: {
         type: String,
         required: true,
     },
+
     contactNumber: {
         type: String,
     },
+    
     verificationStatus: {
         type: String,
         enum: ['unsubmitted', 'pending', 'verified', 'rejected'],
         default: 'unsubmitted'
     },
+
     verificationDeadline: {
         type: Date,
         default: () => Date.now() + 48 * 60 * 60 * 1000,
     },
+    
     events: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Event'
     }]
 });
 
-// Implement MongoDB TTL index 
-// The index only applies if verificationStatus is unsubmitted or pending
+// TTL + conditional index
 companySchema.index(
     { verificationDeadline: 1 },
     {
@@ -53,6 +60,7 @@ companySchema.index(
     }
 );
 
+// discriminator model
 const Company = User.discriminator('company', companySchema);
 
-module.exports = Company;
+export default Company;

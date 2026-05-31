@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const ProgramStatItemSchema = new mongoose.Schema({
     program: { type: String, required: true }, // e.g., 'BTech', 'MTech', 'MSc'
@@ -33,4 +33,4 @@ const HomePageStatsSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-module.exports = mongoose.model('HomePageStats', HomePageStatsSchema);
+export default mongoose.model('HomePageStats', HomePageStatsSchema);

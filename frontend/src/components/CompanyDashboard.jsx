@@ -75,10 +75,10 @@ function StudentProfile({ student, onBack }) {
                 <ArrowLeft size={18} /> Back to Applicants List
             </button>
 
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div className="bg-white/90 dark:bg-slate-900/85 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100/80 dark:border-slate-700/70 overflow-hidden backdrop-blur-sm">
                 <div className="px-8 pb-8 pt-8">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
-                        <div className="w-24 h-24 rounded-full bg-white dark:bg-slate-900 border-4 border-white dark:border-slate-900 shadow-lg flex items-center justify-center overflow-hidden text-blue-600 dark:text-blue-300 shrink-0">
+                        <div className="w-24 h-24 rounded-full bg-white/95 dark:bg-slate-900 border-4 border-white/90 dark:border-slate-900 shadow-lg flex items-center justify-center overflow-hidden text-blue-600 dark:text-blue-300 shrink-0">
                             {student.profilePicture ? (
                                 <img src={student.profilePicture} alt={`${student.fullName || 'Student'} Profile`} className="w-full h-full object-cover" />
                             ) : (
@@ -318,7 +318,7 @@ export default function CompanyDashboard() {
 
     return (
         <div className="space-y-6 animate-[fade-in-up_0.5s_ease-out]">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100 dark:border-slate-700">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/90 dark:bg-slate-900/85 p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100/80 dark:border-slate-700/70 backdrop-blur-sm">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                         <GraduationCap className="text-blue-600 dark:text-blue-300" size={28} />
@@ -342,7 +342,7 @@ export default function CompanyDashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100 dark:border-slate-700 h-fit lg:sticky lg:top-24">
+                <div className="bg-white/90 dark:bg-slate-900/85 p-6 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100/80 dark:border-slate-700/70 h-fit lg:sticky lg:top-24 backdrop-blur-sm">
                     <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-6 flex items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-4">
                         <Filter size={20} className="text-blue-500 dark:text-blue-300" /> Advanced Filters
                     </h3>
@@ -443,7 +443,7 @@ export default function CompanyDashboard() {
                     </div>
                 </div>
 
-                <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100 dark:border-slate-700 overflow-hidden">
+                <div className="lg:col-span-3 bg-white/90 dark:bg-slate-900/85 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100/80 dark:border-slate-700/70 overflow-hidden backdrop-blur-sm">
                     {loading ? (
                         <div className="p-12 text-center text-slate-400 dark:text-slate-500 animate-pulse font-medium">
                             Loading applicants...

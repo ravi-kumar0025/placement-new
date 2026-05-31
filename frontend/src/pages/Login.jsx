@@ -56,7 +56,7 @@ export default function Login() {
     const labelStyle = "block text-sm font-semibold text-slate-700 mb-2 dark:text-slate-200";
 
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 selection:bg-blue-100 selection:text-blue-900 dark:bg-slate-950 dark:selection:bg-slate-700 dark:selection:text-slate-100">
+        <div className="min-h-screen bg-transparent flex items-center justify-center p-4 selection:bg-blue-100 selection:text-blue-900 dark:bg-transparent dark:selection:bg-slate-700 dark:selection:text-slate-100">
             <div className="fixed top-4 right-4 z-20 flex items-center gap-2">
                 <ThemeToggle />
                 <Link

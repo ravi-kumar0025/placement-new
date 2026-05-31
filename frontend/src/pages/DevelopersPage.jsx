@@ -132,14 +132,14 @@ export default function DevelopersPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center dark:bg-slate-950">
+            <div className="min-h-screen bg-transparent flex items-center justify-center">
                 <div className="w-16 h-16 border-4 border-gray-200 border-t-cyan-500 rounded-full animate-spin"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#FFFFFF] font-sans pb-32 overflow-hidden relative dark:bg-slate-950">
+        <div className="min-h-screen bg-transparent font-sans pb-32 overflow-hidden relative">
 
             {/* Navbar */}
             <nav className="fixed w-full z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100 transition-all duration-300 dark:bg-slate-950/85 dark:border-slate-800">

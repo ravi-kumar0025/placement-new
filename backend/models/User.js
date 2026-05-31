@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose  from "mongoose";
 
 const baseOptions = {
     discriminatorKey: 'role',
@@ -39,4 +39,4 @@ userSchema.index({ role: 1, email: 1 });
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+export default User;

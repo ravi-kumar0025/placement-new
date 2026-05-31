@@ -1,7 +1,9 @@
-const express = require('express');
+import express from 'express';
+import {adminController} from '../controllers/index.controllers.js';
+import { verifyToken, requireRole, checkAdminRole } from '../middleware/auth.middleware.js';
+import { upload } from '../middleware/multer.middleware.js';
+
 const router = express.Router();
-const adminController = require('../controllers/adminController');
-const { verifyToken, requireRole, checkAdminRole } = require('../middleware/authMiddleware');
 
 router.use(verifyToken, requireRole(['admin'])); // All routes require admin
 
@@ -31,10 +33,8 @@ router.post('/announcements', checkAdminRole(['super_admin', 'announcement_admin
 router.put('/announcements/:id', checkAdminRole(['super_admin', 'announcement_admin']), adminController.updateAnnouncement);
 router.delete('/announcements/:id', checkAdminRole(['super_admin', 'announcement_admin']), adminController.deleteAnnouncement);
 
-const { upload } = require('../utils/cloudinaryConfig');
-
 // Profile editing for Admins
 router.put('/profile/:adminId/role', checkAdminRole(['super_admin']), adminController.updateAdminRole);
 router.put('/profile', upload.single('profilePicture'), adminController.updateProfile);
 
-module.exports = router;
+export default router;

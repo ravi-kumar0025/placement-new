@@ -1,46 +1,59 @@
-const nodemailer = require('nodemailer');
+import nodemailer from "nodemailer"
 
-const sendOTPEmail = async (to, otp) => {
+const sendOTP = async (to, otp) => {
+
+    // make the transporter
+    const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+    });
+
+    // check the transporter
     try {
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            throw new Error('EMAIL_USER or EMAIL_PASS environment variables are not set. Please configure them in your Render dashboard.');
+        await transporter.verify();
+        console.log("Server is ready to take our messages");
+    } catch (err) {
+        console.error("Verification failed:", err);
+        return;
+    }
+    
+    // ye hi to h message
+    const message = {
+        from: `"TPC" <${process.env.EMAIL_USER}>`,
+        to,
+        subject: "TPC - Login OTP",
+        html: ` <div style="background-color:#f4f7fb;padding:40px 20px;font-family:Arial,sans-serif;"> <div style=" max-width:600px; margin:0 auto; background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); "> <!-- Header --> <div style=" background:linear-gradient(135deg,#2563eb,#1e40af); padding:30px 20px; text-align:center; "> <h1 style=" color:#ffffff; margin:0; font-size:28px; "> Training & Placement Cell </h1> <p style=" color:#dbeafe; margin-top:10px; font-size:14px; "> Secure Login Verification </p> </div> <!-- Body --> <div style="padding:40px 30px;"> <h2 style=" margin-top:0; color:#1f2937; font-size:24px; "> Your OTP Code </h2> <p style=" font-size:16px; color:#4b5563; line-height:1.7; "> Dear User, </p> <p style=" font-size:16px; color:#4b5563; line-height:1.7; "> Use the following One-Time Password (OTP) to securely access your TPC portal account. </p> <!-- OTP Box --> <div style=" margin:35px 0; text-align:center; "> <div style=" display:inline-block; background:#eff6ff; border:2px dashed #2563eb; border-radius:10px; padding:18px 40px; font-size:36px; font-weight:bold; letter-spacing:10px; color:#1d4ed8; "> ${otp} </div> </div> <!-- Warning --> <div style=" background:#fef3c7; border-left:5px solid #f59e0b; padding:14px 18px; border-radius:8px; margin-bottom:25px; "> <p style=" margin:0; color:#92400e; font-size:15px; font-weight:600; "> This OTP is valid for 10 minutes. </p> </div> <p style=" font-size:15px; color:#6b7280; line-height:1.7; "> If you did not request this OTP, you can safely ignore this email. No further action is required. </p> </div> <!-- Footer --> <div style=" background:#f9fafb; padding:20px; text-align:center; border-top:1px solid #e5e7eb; "> <p style=" margin:0; font-size:13px; color:#9ca3af; "> This is an automated email from TPC Portal. </p> <p style=" margin-top:8px; font-size:12px; color:#9ca3af; "> Please do not reply to this message. </p> </div> </div> </div> `,
+    };
+
+    // chalo try karte h send karne ka
+    try {
+        const info = await transporter.sendMail(message);
+        console.log("Message sent:", info.messageId);
+
+        if (info.rejected.length > 0) {
+            console.warn("Some recipients were rejected:", info.rejected);
         }
-
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-
-        const mailOptions = {
-            from: `"TPC IIT Patna" <${process.env.EMAIL_USER}>`,
-            to,
-            subject: 'TPC IIT Patna - Login OTP',
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                    <h2 style="color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px;">Training and Placement Cell, IIT Patna</h2>
-                    <p style="font-size: 16px; color: #555;">Dear User,</p>
-                    <p style="font-size: 16px; color: #555;">Your One-Time Password (OTP) for accessing the TPC portal is:</p>
-                    <div style="text-align: center; margin: 20px 0;">
-                        <span style="display: inline-block; font-size: 32px; font-weight: bold; color: #e74c3c; letter-spacing: 5px; padding: 10px 20px; border: 1px dashed #e74c3c; border-radius: 4px; background-color: #fceceb;">${otp}</span>
-                    </div>
-                    <p style="font-size: 16px; color: #555; font-weight: bold;">This OTP is valid for 10 minutes.</p>
-                    <p style="font-size: 14px; color: #7f8c8d; margin-top: 30px;">If you did not request this OTP, please ignore this email.</p>
-                    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-                    <p style="font-size: 12px; color: #95a5a6; text-align: center;">This is an automated message, please do not reply.</p>
-                </div>
-            `,
-        };
-
-        const info = await transporter.sendMail(mailOptions);
-        console.log(`[EMAIL STUB] Sent OTP ${otp} to ${to}`);
-        return info;
-    } catch (error) {
-        console.error('Error sending OTP email:', error);
-        throw error;
+    } catch (err) {
+        switch (err.code) {
+            case "ECONNECTION":
+            case "ETIMEDOUT":
+                console.error("Network error - retry later:", err.message);
+                break;
+            case "EAUTH":
+                console.error("Authentication failed:", err.message);
+                break;
+            case "EENVELOPE":
+                console.error("Invalid recipients:", err.rejected);
+                break;
+            default:
+                console.error("Send failed:", err.message);
+        }
     }
 };
 
-module.exports = { sendOTPEmail };
+export default sendOTP;

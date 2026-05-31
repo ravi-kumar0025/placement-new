@@ -1,14 +1,15 @@
-const jwt = require('jsonwebtoken');
+import jwt from "jsonwebtoken"
 
-exports.verifyToken = (req, res, next) => {
+const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {             //are bhai token hona to chaaiye
         return res.status(401).json({ message: 'No token provided' });
     }
 
     const token = authHeader.split(' ')[1];
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_super_secret_jwt_key');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
         next();
     } catch (err) {
@@ -16,7 +17,7 @@ exports.verifyToken = (req, res, next) => {
     }
 };
 
-exports.requireRole = (roles) => {
+const requireRole = (roles) => {
     return (req, res, next) => {
         if (!req.user || !roles.includes(req.user.role)) {
             return res.status(403).json({ message: 'Forbidden: Insufficient role' });
@@ -25,14 +26,14 @@ exports.requireRole = (roles) => {
     };
 };
 
-exports.isCompanyVerified = (req, res, next) => {
+const isCompanyVerified = (req, res, next) => {
     if (req.user && req.user.role === 'company' && req.user.verificationStatus === 'pending') {
         return res.status(403).json({ message: 'Forbidden: Company is not verified yet' });
     }
     next();
 };
 
-exports.checkAdminRole = (adminTypes) => {
+const checkAdminRole = (adminTypes) => {
     return (req, res, next) => {
         if (!req.user || req.user.role !== 'admin' || !adminTypes.includes(req.user.adminType)) {
             if (req.user && req.user.role === 'admin' && req.user.adminType === 'super_admin') {
@@ -43,3 +44,10 @@ exports.checkAdminRole = (adminTypes) => {
         next();
     };
 };
+
+export {
+    verifyToken,
+    checkAdminRole,
+    isCompanyVerified,
+    requireRole
+}

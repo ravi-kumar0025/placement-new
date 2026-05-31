@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+
+import mongoose from "mongoose"
 
 const otpSchema = new mongoose.Schema({
     email: {
@@ -14,10 +15,14 @@ const otpSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-        expires: 600, // 10 minutes TTL
+    },
+    expiresAt : {
+        type: Date,
+        default: () => Date.now() + 10 * 60 * 1000,
+        index: { expires: 0 }   //  this  will automatically expire the otp after time limit
     }
 });
 
 const Otp = mongoose.model('Otp', otpSchema);
 
-module.exports = Otp;
+export default Otp;
