@@ -1,8 +1,8 @@
-# IIT Patna Training & Placement Cell (TPC) Portal
+# Placement Cell (TPC) Portal
 
 <div align="center">
 
-### 🌐 Live at **[tpc-pwj4.onrender.com](https://tpc-pwj4.onrender.com)**
+###  
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)
@@ -18,7 +18,7 @@
 
 ## Overview
 
-The official Training and Placement Committee (TPC) portal for **IIT Patna**. A full-stack web application that connects **Students**, **Companies**, and **TPC Admins** — streamlining the recruitment lifecycle from announcement to placement.
+A full-stack web application that connects **Students**, **Companies**, and **TPC Admins** — streamlining the recruitment lifecycle from announcement to placement.
 
 ## Key Features
 
@@ -117,15 +117,6 @@ TPC/
 └── README.md
 ```
 
-## Deployment
-
-The application is deployed on **[Render](https://render.com)** as two separate services:
-
-| Service | URL | Type |
-|---------|-----|------|
-| **Frontend** | [tpc-pwj4.onrender.com](https://tpc-pwj4.onrender.com) | Static Site |
-| **Backend** | [tpc-backend-kyem.onrender.com](https://tpc-backend-kyem.onrender.com) | Web Service |
-
 ### Render Configuration
 
 **Frontend (Static Site):**
@@ -138,7 +129,6 @@ The application is deployed on **[Render](https://render.com)** as two separate 
 - Build Command: `npm install`
 - Start Command: `npm start`
 
-> **Note:** Render free-tier services spin down after 15 minutes of inactivity. The first request may take 30–60 seconds to cold-start.
 
 ## Getting Started (Local Development)
 
@@ -296,4 +286,4 @@ All API routes are prefixed with `/api`:
 
 ## Acknowledgements
 
-Designed and developed for the **Training and Placement Cell, IIT Patna**.
+
