@@ -44,7 +44,7 @@ export default function CompanyVerificationForm() {
         setError(null);
 
         try {
-            const res = await api.post('/api/company/verify', formData, {
+            await api.post('/api/company/verify', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }

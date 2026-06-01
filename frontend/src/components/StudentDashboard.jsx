@@ -25,7 +25,7 @@ const localizer = dateFnsLocalizer({
 
 export default function StudentDashboard() {
     const { token, user } = useAuth();
-    const [events, setEvents] = useState([]);
+    const [, setEvents] = useState([]);
     const [announcements, setAnnouncements] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [selectedIndex, setSelectedIndex] = useState(null);
@@ -53,13 +53,6 @@ export default function StudentDashboard() {
     };
 
     const goToToday = () => setCurrentDate(new Date());
-
-    useEffect(() => {
-        if (token && user) {
-            fetchEvents();
-            fetchAnnouncements();
-        }
-    }, [token, user?.department]);
 
     const fetchEvents = async () => {
         try {
@@ -96,6 +89,15 @@ export default function StudentDashboard() {
             console.error("Error fetching announcements:", err);
         }
     };
+
+    useEffect(() => {
+        if (token && user) {
+            queueMicrotask(() => {
+                fetchEvents();
+                fetchAnnouncements();
+            });
+        }
+    }, [token, user?.department]);
 
     const eventStyleGetter = (event) => {
         const isViewed = viewedIds.has(event.id || event.title);
@@ -581,7 +583,7 @@ export default function StudentDashboard() {
                                 {announcements.length === 0 ? (
                                     <div className="text-center py-8 text-slate-400 font-medium text-sm dark:text-slate-500">No new announcements for your branch.</div>
                                 ) : (
-                                    announcements.map((a, idx) => (
+                                    announcements.map((a) => (
                                         <div
                                             key={a._id}
                                             onClick={() => handleSelectEvent({

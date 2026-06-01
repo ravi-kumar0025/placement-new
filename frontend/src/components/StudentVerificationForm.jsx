@@ -62,7 +62,7 @@ export default function StudentVerificationForm() {
         data.append('idCard', idCard);
 
         try {
-            const res = await api.post('/api/student/verify', data, {
+            await api.post('/api/student/verify', data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'

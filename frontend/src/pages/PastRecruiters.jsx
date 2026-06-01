@@ -8,31 +8,6 @@ import ThemeToggle from '../components/ThemeToggle';
 import logo from '../assets/logo.png';
 import { forceSimulation, forceX, forceY, forceCollide, forceManyBody } from 'd3-force';
 
-// Framer Motion Variants
-const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.05
-        }
-    }
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, scale: 0.9, y: 20 },
-    show: {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        transition: {
-            type: "spring",
-            stiffness: 260,
-            damping: 20
-        }
-    }
-};
-
 const MotionDiv = motion.div;
 const emptyRecruiterForm = { name: '', industry: '', tier: 'Tier 1', logoFile: null, logoPreview: '' };
 const MAX_LOGO_SIZE_BYTES = 2 * 1024 * 1024;
@@ -175,6 +150,7 @@ const BubbleCloud = ({ recruiters, isAdmin, isEditMode, handleEdit, handleDelete
     const nodesRef = useRef([]);
     const simulationRef = useRef(null);
     const bubbleRefs = useRef({});
+    const [nodes, setNodes] = useState([]);
     const [viewportWidth, setViewportWidth] = useState(() => (typeof window === 'undefined' ? 1280 : window.innerWidth));
 
     useEffect(() => {
@@ -210,6 +186,7 @@ const BubbleCloud = ({ recruiters, isAdmin, isEditMode, handleEdit, handleDelete
         });
         
         nodesRef.current = newNodes.filter(n => validIds.has(n.id));
+        setNodes(nodesRef.current);
 
         if (simulationRef.current) {
             simulationRef.current.stop();
@@ -248,7 +225,7 @@ const BubbleCloud = ({ recruiters, isAdmin, isEditMode, handleEdit, handleDelete
             clearInterval(steadyMove);
             sim.stop();
         };
-    }, [recruiters]);
+    }, [recruiters, viewportWidth]);
 
     const handleMouseMove = (e) => {
         if (!containerRef.current || !simulationRef.current) return;
@@ -297,7 +274,7 @@ const BubbleCloud = ({ recruiters, isAdmin, isEditMode, handleEdit, handleDelete
             className="relative w-full overflow-hidden rounded-[2.5rem] bg-white/40 dark:bg-slate-900/40 border border-white/50 dark:border-slate-700/50 backdrop-blur-sm shadow-[inset_0_2px_20px_rgba(0,0,0,0.02)]"
             style={{ height: `${bubbleHeight}px` }}
         >
-            {nodesRef.current.map((rec) => (
+            {nodes.map((rec) => (
                 <div
                     key={rec.id}
                     ref={el => bubbleRefs.current[rec.id] = el}

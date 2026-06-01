@@ -7,8 +7,6 @@ export default function AdminEventWorkflows() {
     const { user, token } = useAuth();
     
     const canDoAnnouncement = user.adminType === 'super_admin' || user.adminType === 'announcement_admin';
-    const canDoAdminVerify = user.adminType === 'super_admin' || user.adminType === 'student_admin';
-
     const [activeTab, setActiveTab] = useState(canDoAnnouncement ? 'announcement' : 'admin');
     
     const [events, setEvents] = useState([]);

@@ -5,6 +5,29 @@ import { UserCircle, LogOut, Bell, Building, CheckCircle, Database, Calendar as 
 import ThemeToggle from './ThemeToggle';
 import logo from '../assets/logo.png';
 
+function SidebarItem({ icon, label, path, disabled, role, navigate }) {
+    const isDashboardHome = path === `/dashboard/${role}`;
+    const isActive = isDashboardHome
+        ? window.location.pathname === path || window.location.pathname === `${path}/`
+        : window.location.pathname.includes(path);
+    const IconComponent = icon;
+
+    return (
+        <button
+            disabled={disabled}
+            onClick={() => { if (!disabled && path) navigate(path); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 mb-1 rounded-xl text-sm font-semibold transition-all duration-200 ${disabled
+                ? 'bg-gray-50 text-gray-400 cursor-not-allowed border border-gray-100 dark:bg-slate-800/60 dark:text-slate-500 dark:border-slate-700'
+                : isActive ? 'bg-blue-100 text-blue-700 shadow-sm border border-blue-200 dark:bg-blue-900/40 dark:text-blue-200 dark:border-blue-800' : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm group dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-200'
+                }`}
+        >
+            <IconComponent className={`w-5 h-5 ${disabled ? 'text-gray-400 dark:text-slate-500' : isActive ? 'text-blue-600 dark:text-blue-300' : 'text-slate-400 group-hover:text-blue-600 transition-colors dark:text-slate-500 dark:group-hover:text-blue-300'}`} />
+            <span>{label}</span>
+            {disabled && <ShieldAlert className="w-4 h-4 ml-auto text-yellow-500" title="Verification Pending" />}
+        </button>
+    );
+}
+
 export default function DashboardShell() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -26,26 +49,7 @@ export default function DashboardShell() {
         navigate('/login');
     };
 
-    const SidebarItem = ({ icon: Icon, label, path, disabled }) => {
-        const isDashboardHome = path === `/dashboard/${user.role}`;
-        const isActive = isDashboardHome
-            ? window.location.pathname === path || window.location.pathname === `${path}/`
-            : window.location.pathname.includes(path);
-        return (
-            <button
-                disabled={disabled}
-                onClick={() => { if (!disabled && path) navigate(path); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 mb-1 rounded-xl text-sm font-semibold transition-all duration-200 ${disabled
-                    ? 'bg-gray-50 text-gray-400 cursor-not-allowed border border-gray-100 dark:bg-slate-800/60 dark:text-slate-500 dark:border-slate-700'
-                    : isActive ? 'bg-blue-100 text-blue-700 shadow-sm border border-blue-200 dark:bg-blue-900/40 dark:text-blue-200 dark:border-blue-800' : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm group dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-200'
-                    }`}
-            >
-                <Icon className={`w-5 h-5 ${disabled ? 'text-gray-400 dark:text-slate-500' : isActive ? 'text-blue-600 dark:text-blue-300' : 'text-slate-400 group-hover:text-blue-600 transition-colors dark:text-slate-500 dark:group-hover:text-blue-300'}`} />
-                <span>{label}</span>
-                {disabled && <ShieldAlert className="w-4 h-4 ml-auto text-yellow-500" title="Verification Pending" />}
-            </button>
-        );
-    };
+    const sidebarProps = { role: user.role, navigate };
 
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col font-sans dark:bg-slate-950">
@@ -108,29 +112,33 @@ export default function DashboardShell() {
                     <div className="p-4 flex-1 overflow-y-auto">
                         <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 px-4 dark:text-slate-500">Menu</div>
 
-                        <SidebarItem icon={LayoutDashboard} label="Dashboard Home" path={`/dashboard/${user.role}`} />
+                        <SidebarItem {...sidebarProps} icon={LayoutDashboard} label="Dashboard Home" path={`/dashboard/${user.role}`} />
 
                         {user.role === 'student' && (
                             <>
                                 <SidebarItem
+                                    {...sidebarProps}
                                     icon={Bell}
                                     label="Announcements"
                                     path="/dashboard/student/announcements"
                                     disabled={user.verificationStatus === 'pending' || user.verificationStatus === 'unsubmitted'}
                                 />
                                 <SidebarItem
+                                    {...sidebarProps}
                                     icon={CalendarIcon}
                                     label="Calendar & Events"
                                     path="/dashboard/student/calendar"
                                     disabled={user.verificationStatus === 'pending' || user.verificationStatus === 'unsubmitted'}
                                 />
                                 <SidebarItem
+                                    {...sidebarProps}
                                     icon={FileText}
                                     label="My Resumes"
                                     path="/dashboard/student/resumes"
                                     disabled={user.verificationStatus === 'pending' || user.verificationStatus === 'unsubmitted'}
                                 />
                                 <SidebarItem
+                                    {...sidebarProps}
                                     icon={CheckCircle}
                                     label="Verify Yourself"
                                     path="/dashboard/student/verify"
@@ -141,33 +149,34 @@ export default function DashboardShell() {
                         {user.role === 'company' && (
                             <>
                                 <SidebarItem
+                                    {...sidebarProps}
                                     icon={Database}
                                     label="Student Database"
                                     path="/dashboard/company/database"
                                     disabled={user.verificationStatus === 'pending' || user.verificationStatus === 'unsubmitted'}
                                 />
-                                <SidebarItem icon={CalendarIcon} label="Manage Events" path="/dashboard/company/events" />
-                                <SidebarItem icon={CheckCircle} label="Verification Status" path="/dashboard/company/verify" />
-                                <SidebarItem icon={Building} label="Company Profile" path="/dashboard/company/profile" />
+                                <SidebarItem {...sidebarProps} icon={CalendarIcon} label="Manage Events" path="/dashboard/company/events" />
+                                <SidebarItem {...sidebarProps} icon={CheckCircle} label="Verification Status" path="/dashboard/company/verify" />
+                                <SidebarItem {...sidebarProps} icon={Building} label="Company Profile" path="/dashboard/company/profile" />
                             </>
                         )}
 
                         {user.role === 'admin' && (
                             <>
                                 {(user.adminType === 'super_admin' || user.adminType === 'announcement_admin') && (
-                                    <SidebarItem icon={Bell} label="Manage Announcements" path="/dashboard/admin/announcements" />
+                                    <SidebarItem {...sidebarProps} icon={Bell} label="Manage Announcements" path="/dashboard/admin/announcements" />
                                 )}
                                 {user.adminType === 'super_admin' && (
                                     <>
-                                        <SidebarItem icon={CheckCircle} label="Verify Companies" path="/dashboard/admin/companies" />
-                                        <SidebarItem icon={CheckCircle} label="Verify Students" path="/dashboard/admin/students/verify" />
+                                        <SidebarItem {...sidebarProps} icon={CheckCircle} label="Verify Companies" path="/dashboard/admin/companies" />
+                                        <SidebarItem {...sidebarProps} icon={CheckCircle} label="Verify Students" path="/dashboard/admin/students/verify" />
                                     </>
                                 )}
                                 {(user.adminType === 'super_admin' || user.adminType === 'student_admin') && (
-                                    <SidebarItem icon={CalendarIcon} label="Manage Calendar" path="/dashboard/admin/calendar" />
+                                    <SidebarItem {...sidebarProps} icon={CalendarIcon} label="Manage Calendar" path="/dashboard/admin/calendar" />
                                 )}
-                                <SidebarItem icon={ClipboardList} label="Event Workflows" path="/dashboard/admin/event-workflows" />
-                                <SidebarItem icon={Settings} label="Assign Powers" path="/dashboard/admin/assign-powers" />
+                                <SidebarItem {...sidebarProps} icon={ClipboardList} label="Event Workflows" path="/dashboard/admin/event-workflows" />
+                                <SidebarItem {...sidebarProps} icon={Settings} label="Assign Powers" path="/dashboard/admin/assign-powers" />
                             </>
                         )}
                     </div>

@@ -6,7 +6,7 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import enUS from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import {
     X, Briefcase, Megaphone, MonitorPlay,
     Calendar as CalendarIcon, CheckCircle2, ExternalLink, Clock, MapPin, Loader2, AlertTriangle

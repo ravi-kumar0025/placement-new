@@ -9,6 +9,7 @@ const getPendingCompanies = async (req, res) => {
         const companies = await Company.find({ verificationStatus: 'pending' });
         res.status(200).json({ companies });
     } catch (err) {
+        console.log('Could not fetch the "verification pending status" companies.',error);
         res.status(500).json({ message: 'Could not fetch the "verification pending status" companies.' });
     }
 };
@@ -249,7 +250,8 @@ const getAnnouncements = async (req, res) => {
         });
         return res.status(200).json({ announcements });
     } catch (err) {
-        res.status(500).json({ message: 'could not fetch the announcements' });
+        console.log('could not fetch the announcements ',error)
+        return res.status(500).json({ message: 'could not fetch the announcements' });
     }
 };
 
@@ -262,7 +264,8 @@ const deleteAnnouncement = async (req, res) => {
         }
         return res.status(200).json({ message: 'Announcement deleted' });
     } catch (err) {
-        res.status(500)
+        console.log('could not delete the announcement, try again later', error)
+        return res.status(500)
             .json({ message: 'could not delete the announcement, try again later' });
     }
 };
@@ -429,7 +432,8 @@ const createAnnouncement = async (req, res) => {
         return res.status(201)
             .json({ message: 'Announcement created', announcement: newAnnouncement });
     } catch (err) {
-        res.status(500).json({ message: 'new announcement could not be created' });
+        console.error('new announcement could not be created',err)
+        return res.status(500).json({ message: 'new announcement could not be created' });
     }
 };
 
@@ -464,6 +468,7 @@ const updateAnnouncement = async (req, res) => {
 
         return res.status(200).json({ message: 'Announcement updated successfully', announcement: updatedAnnouncement });
     } catch (err) {
+        console.error('could not update the announcement, try again later', err)
         return res.status(500).json({ message: 'could not update the announcement, try again later' });
     }
 };
@@ -518,7 +523,7 @@ const createEvent = async (req, res) => {
         return res.status(201).json({ message: 'Event created successfully', event: newEvent });
     } catch (err) {
         console.error('createEvent Error:', err);
-        res.status(500).json({ message: 'could not create the event' });
+        return res.status(500).json({ message: 'could not create the event' });
     }
 };
 

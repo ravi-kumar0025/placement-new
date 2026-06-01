@@ -321,7 +321,7 @@ export default function EditorialPlacementCharts({ data = mockLiveState }) {
                                             paddingAngle={4}
                                             dataKey="count"
                                             stroke="none"
-                                            label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name }) => {
+                                            label={({ cx, cy, midAngle, outerRadius, percent, name }) => {
                                                 const RADIAN = Math.PI / 180;
                                                 const radius = outerRadius * 1.35;
                                                 const x = cx + radius * Math.cos(-midAngle * RADIAN);

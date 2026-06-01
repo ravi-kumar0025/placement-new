@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
 const AuthContext = createContext();
@@ -19,11 +20,13 @@ export const AuthProvider = ({ children }) => {
     });
 
     useEffect(() => {
-        if (!token) {
-            setUser(null);
-            localStorage.removeItem('userData');
-        }
-        setLoading(false);
+        queueMicrotask(() => {
+            if (!token) {
+                setUser(null);
+                localStorage.removeItem('userData');
+            }
+            setLoading(false);
+        });
     }, [token]);
 
     const login = (newToken, userData) => {

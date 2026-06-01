@@ -26,7 +26,7 @@ export default function MyResumes() {
                 } else {
                     setError('Failed to load profile data.');
                 }
-            } catch (err) {
+            } catch {
                 setError('Error connecting to Server.');
             } finally {
                 setLoading(false);
@@ -75,7 +75,7 @@ export default function MyResumes() {
             } else {
                 setError(data.message || 'Error uploading resume.');
             }
-        } catch (err) {
+        } catch {
             setError('Server connection error during upload.');
         } finally {
             setUploading(false);
@@ -107,7 +107,7 @@ export default function MyResumes() {
             } else {
                 setError(data.message || 'Error removing resume.');
             }
-        } catch (err) {
+        } catch {
             setError('Server connection error during removal.');
         } finally {
             setUploading(false);

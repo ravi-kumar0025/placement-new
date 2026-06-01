@@ -21,7 +21,7 @@ const uploadOnCloudinary = async (localFilePath, folder = "tpc-student-ids") => 
         return response;
 
     } catch (error) {
-        console.log("can not upload the file on cloudinary check CLOUDINARY.UTILS")
+        console.log("can not upload the file on cloudinary check CLOUDINARY.UTILS Error: ",error)
         if (localFilePath && fs.existsSync(localFilePath)) {
             fs.unlinkSync(localFilePath)
         }
@@ -43,7 +43,7 @@ const deleteFromCloudinary = async (fileUrl) => {
             resource_type: "auto"
         });
     } catch (error) {
-        console.log("can not delete the file from cloudinary check CLOUDINARY.UTILS")
+        console.log("can not delete the file from cloudinary check CLOUDINARY.UTILS", error)
         return null;
     }
 }

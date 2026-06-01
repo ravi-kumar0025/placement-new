@@ -108,7 +108,7 @@ const getCompanyEvents = async (req, res) => {
         return res.status(200).json({ events });
     } catch (err) {
         console.error('getCompanyEvents Error:', err);
-        res.status(500).json({ message: 'Internal server error while fetching events' });
+        return res.status(500).json({ message: 'Internal server error while fetching events' });
     }
 
 };
@@ -172,7 +172,7 @@ const getStudents = async (req, res) => {
         res.status(200).json({ students });
     } catch (err) {
         console.error('getStudents Error:', err);
-        res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error' });
     }
 };
 
@@ -206,7 +206,7 @@ const requestEvent = async (req, res) => {
         return res.status(201).json({ message: 'Event request submitted successfully', event: newEvent });
     } catch (err) {
         console.error('requestEvent Error:', err);
-        res.status(500).json({ message: 'Internal server error while requesting event creation, try again later or contact administration' });
+        return res.status(500).json({ message: 'Internal server error while requesting event creation, try again later or contact administration' });
     }
 };
 
@@ -247,7 +247,7 @@ const eventAction = async (req, res) => {
         res.status(200).json({ message: `Event action '${action}' applied successfully`, event });
     } catch (err) {
         console.error('eventAction Error:', err);
-        res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error' });
     }
 };
 

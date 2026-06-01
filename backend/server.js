@@ -1,15 +1,14 @@
 import express from "express";
-import dotenv from "dotenv"
+import "dotenv/config";
 import cors from "cors"
 import connectDB from "./Database/index.database.js"
 const app = express();
 
-dotenv.config();
+// dotenv.config();
 
 app.use(cors({
     origin: [
         'http://localhost:5173',
-        'https://tpc-portal.vercel.app',
     ],
     credentials: true,
 }));

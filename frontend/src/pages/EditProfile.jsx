@@ -31,7 +31,7 @@ export default function EditProfile() {
                 } else {
                     setError('Failed to load profile.');
                 }
-            } catch (err) {
+            } catch {
                 setError('Error connecting to Server.');
             } finally {
                 setLoading(false);
@@ -124,7 +124,7 @@ export default function EditProfile() {
             } else {
                 setError(data.message || 'Error updating profile.');
             }
-        } catch (err) {
+        } catch {
             setError('Server connection error.');
         } finally {
             setSaving(false);

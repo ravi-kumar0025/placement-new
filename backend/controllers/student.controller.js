@@ -25,7 +25,10 @@ const submitVerification = async (req, res) => {
         };
 
         if (req.file && req.file.path) {                                                                                    //ye soda to id card ke liye h
-            const cloudinaryResponse = await uploadOnCloudinary(req.file.path);
+            const cloudinaryResponse = await uploadOnCloudinary(
+                req.file.path,
+                "tpc-student-id-cards"
+            );
 
             if (!cloudinaryResponse) {
                 return res.status(500).json({ message: 'can not process the image, try again.' });
@@ -78,7 +81,8 @@ const updateProfile = async (req, res) => {
         if (req.files?.resume?.[0]) {
             const oldResume = student.resume;
             const cloudinaryResponse = await uploadOnCloudinary(
-                req.files.resume[0].path
+                req.files.resume[0].path,
+                "tpc-student-resumes"
             );
             if (!cloudinaryResponse) {
                 return res.status(500).json({
@@ -94,7 +98,8 @@ const updateProfile = async (req, res) => {
         if (req.files?.profilePicture?.[0]) {
             const oldProfilePicture = student.profilePicture;
             const cloudinaryResponse = await uploadOnCloudinary(
-                req.files.profilePicture[0].path
+                req.files.profilePicture[0].path,
+                "tpc-student-profile-pictures"
             );
             if (!cloudinaryResponse) {
                 return res.status(500).json({
@@ -208,7 +213,7 @@ const getAnnouncements = async (req, res) => {
         return res.status(200).json({ announcements });
     } catch (err) {
         console.error('getAnnouncements Error:', err);
-        res.status(500).json({ message: 'could not fetch the announcements' });
+        return res.status(500).json({ message: 'could not fetch the announcements' });
     }
 };
 
@@ -269,7 +274,7 @@ const getEvents = async (req, res) => {
         res.status(200).json({ events });
     } catch (err) {
         console.error('getEvents Error:', err);
-        res.status(500).json({ message: 'Internal server error' });
+        return  res.status(500).json({ message: 'Internal server error' });
     }
 };
 
