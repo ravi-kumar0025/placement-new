@@ -4,14 +4,11 @@ import cors from "cors"
 import connectDB from "./Database/index.database.js"
 const app = express();
 
-// dotenv.config();
-
-const cors = require("cors");
-
 app.use(
     cors({
         origin: [
             "http://localhost:5173",
+            process.env.FRONTEND_URL
         ],
         credentials: true
     })
