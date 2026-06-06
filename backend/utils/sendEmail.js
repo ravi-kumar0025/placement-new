@@ -1,6 +1,8 @@
 import nodemailer from "nodemailer"
 
 const sendOTP = async (to, otp) => {
+    const maskedTo = to.replace(/^(.{2}).*(@.*)$/, '$1***$2');
+    console.log('[auth][email] Preparing OTP email', { to: maskedTo });
 
     // make the transporter
     const transporter = nodemailer.createTransport({
@@ -15,10 +17,15 @@ const sendOTP = async (to, otp) => {
 
     // check the transporter
     try {
+        console.log('[auth][email] Verifying SMTP transporter', { to: maskedTo });
         await transporter.verify();
-        console.log("Server is ready to take our messages");
+        console.log('[auth][email] SMTP transporter ready', { to: maskedTo });
     } catch (err) {
-        console.error("Verification failed:", err);
+        console.error('[auth][email] SMTP verification failed', {
+            to: maskedTo,
+            code: err.code,
+            message: err.message,
+        });
         throw err;
     }
     
@@ -32,11 +39,12 @@ const sendOTP = async (to, otp) => {
 
     // chalo try karte h send karne ka
     try {
+        console.log('[auth][email] Sending OTP email', { to: maskedTo });
         const info = await transporter.sendMail(message);
-        console.log("Message sent:", info.messageId);
+        console.log('[auth][email] OTP email sent', { to: maskedTo, messageId: info.messageId });
 
         if (info.rejected.length > 0) {
-            console.warn("Some recipients were rejected:", info.rejected);
+            console.warn('[auth][email] Some recipients were rejected', { to: maskedTo, rejected: info.rejected });
         }
     } catch (err) {
         switch (err.code) {
@@ -53,6 +61,11 @@ const sendOTP = async (to, otp) => {
             default:
                 console.error("Send failed:", err.message);
         }
+        console.error('[auth][email] OTP email send failed', {
+            to: maskedTo,
+            code: err.code,
+            message: err.message,
+        });
         throw err;
     }
 };

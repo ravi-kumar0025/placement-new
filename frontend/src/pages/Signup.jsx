@@ -46,6 +46,7 @@ export default function Signup() {
         e.preventDefault();
         setLoading(true);
         setError('');
+        console.log('[auth][signup] Requesting OTP', { email, role });
 
         let payload = { email, role };
 
@@ -59,10 +60,18 @@ export default function Signup() {
 
         try {
             await api.post('/api/auth/signup', payload);
+            console.log('[auth][signup] OTP request succeeded', { email, role });
             setOtpSent(true);
         } catch (err) {
+            console.error('[auth][signup] OTP request failed', {
+                email,
+                role,
+                status: err.response?.status,
+                message: err.response?.data?.message || err.message,
+            });
             setError(err.response?.data?.message || 'Failed to send OTP. Please try again.');
         } finally {
+            console.log('[auth][signup] OTP request finished', { email, role });
             setLoading(false);
         }
     };
@@ -71,13 +80,25 @@ export default function Signup() {
         e.preventDefault();
         setLoading(true);
         setError('');
+        console.log('[auth][signup] Verifying OTP', { email });
         try {
             const { data } = await api.post('/api/auth/verify-otp', { email, otp });
+            console.log('[auth][signup] OTP verification succeeded', {
+                email,
+                role: data.user?.role,
+                userId: data.user?._id,
+            });
             login(data.token, data.user);
             navigate('/dashboard/' + data.user.role);
         } catch (err) {
+            console.error('[auth][signup] OTP verification failed', {
+                email,
+                status: err.response?.status,
+                message: err.response?.data?.message || err.message,
+            });
             setError(err.response?.data?.message || 'Invalid OTP. Please try again.');
         } finally {
+            console.log('[auth][signup] OTP verification finished', { email });
             setLoading(false);
         }
     };

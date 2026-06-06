@@ -26,13 +26,22 @@ export default function Login() {
         e.preventDefault();
         setLoading(true);
         setError('');
+        console.log('[auth][login] Requesting OTP', { email, role });
 
         try {
             await api.post('/api/auth/login', { email, role });
+            console.log('[auth][login] OTP request succeeded', { email, role });
             setOtpSent(true);
         } catch (err) {
+            console.error('[auth][login] OTP request failed', {
+                email,
+                role,
+                status: err.response?.status,
+                message: err.response?.data?.message || err.message,
+            });
             setError(err.response?.data?.message || 'Failed to send OTP. Please try again.');
         } finally {
+            console.log('[auth][login] OTP request finished', { email, role });
             setLoading(false);
         }
     };
@@ -41,13 +50,25 @@ export default function Login() {
         e.preventDefault();
         setLoading(true);
         setError('');
+        console.log('[auth][login] Verifying OTP', { email });
         try {
             const { data } = await api.post('/api/auth/verify-otp', { email, otp });
+            console.log('[auth][login] OTP verification succeeded', {
+                email,
+                role: data.user?.role,
+                userId: data.user?._id,
+            });
             login(data.token, data.user);
             navigate('/dashboard/' + data.user.role);
         } catch (err) {
+            console.error('[auth][login] OTP verification failed', {
+                email,
+                status: err.response?.status,
+                message: err.response?.data?.message || err.message,
+            });
             setError(err.response?.data?.message || 'Invalid OTP. Please try again.');
         } finally {
+            console.log('[auth][login] OTP verification finished', { email });
             setLoading(false);
         }
     };
