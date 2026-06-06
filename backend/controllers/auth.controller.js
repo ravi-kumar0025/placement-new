@@ -137,7 +137,7 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const { email, role } = req.body;
+        const { role, email } = req.body;
         console.log('[auth][login] Request received', { email: maskEmail(email), role });
         if (!email || !role) {
             console.warn('[auth][login] Missing email or role');
@@ -176,7 +176,8 @@ const login = async (req, res) => {
 
         console.log('[auth][login] OTP email sent, responding success', { email: maskEmail(email), role });
         res.status(200).json({ message: 'OTP sent successfully' });
-    } catch (err) {
+    }
+    catch (err) {
         console.error('Login Error:', err);
         res.status(500).json({ message: 'could not login, try again later' });
     }
