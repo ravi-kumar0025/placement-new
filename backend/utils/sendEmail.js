@@ -19,7 +19,7 @@ const sendOTP = async (to, otp) => {
         console.log("Server is ready to take our messages");
     } catch (err) {
         console.error("Verification failed:", err);
-        return;
+        throw err;
     }
     
     // ye hi to h message
@@ -53,6 +53,7 @@ const sendOTP = async (to, otp) => {
             default:
                 console.error("Send failed:", err.message);
         }
+        throw err;
     }
 };
 
