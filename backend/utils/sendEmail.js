@@ -7,12 +7,8 @@ const sendOTP = async (to, otp) => {
     // make the transporter
     const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        family: 4,
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 10000,
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
@@ -20,19 +16,19 @@ const sendOTP = async (to, otp) => {
     });
 
     // check the transporter
-    try {
-        console.log('[auth][email] Verifying SMTP transporter', { to: maskedTo });
-        await transporter.verify();
-        console.log('[auth][email] SMTP transporter ready', { to: maskedTo });
-    } catch (err) {
-        console.error('[auth][email] SMTP verification failed', {
-            to: maskedTo,
-            code: err.code,
-            message: err.message,
-        });
-        throw err;
-    }
-    
+    // try {
+    //     console.log('[auth][email] Verifying SMTP transporter', { to: maskedTo });
+    //     await transporter.verify();
+    //     console.log('[auth][email] SMTP transporter ready', { to: maskedTo });
+    // } catch (err) {
+    //     console.error('[auth][email] SMTP verification failed', {
+    //         to: maskedTo,
+    //         code: err.code,
+    //         message: err.message,
+    //     });
+    //     throw err;
+    // }
+
     // ye hi to h message
     const message = {
         from: `"TPC" <${process.env.EMAIL_USER}>`,
