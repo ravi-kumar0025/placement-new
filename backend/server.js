@@ -6,31 +6,13 @@ const app = express();
 
 const normalizeOrigin = (origin) => origin?.trim().replace(/\/$/, "");
 
-const allowedOrigins = new Set(
-    [
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "http://localhost:4173",
-        "https://placement-portal-pi-six.vercel.app",
-        process.env.FRONTEND_URL,
-        ...(process.env.FRONTEND_URLS?.split(",") || [])
-    ]
-        .map(normalizeOrigin)
-        .filter(Boolean)
-);
-
 app.use(
     cors({
-        origin(origin, callback) {
-            if (!origin || allowedOrigins.has(normalizeOrigin(origin))) {
-                return callback(null, true);
-            }
-
-            return callback(new Error(`CORS blocked origin: ${origin}`));
-        },
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"]
+        origin: [
+            "http://localhost:5173",
+            process.env.FRONTEND_URL
+        ],
+        credentials: true
     })
 );
 
